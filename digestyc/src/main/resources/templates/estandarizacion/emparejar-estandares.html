@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Gesti&oacute;n de est&aacute;ndares -> Asignar est&aacute;ndares -> 
+						Asignar </b>
+				</h5>
+				<hr />
+				<h4>Asignando valor est&aacute;ndar a la columna : <label th:text="${versionColumna.plantillaColumna.nombre}"></label></h4>
+			</div>
+
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-12">
+			<form action="#" th:action="@{/estandares/emparejar-valores/guardar}"
+				method="POST" class="was-validated" id="formEliminarRol">
+				<input type="hidden" name="${_csrf.parameterName}"
+					value="${_csrf.token}" /> 
+
+				<input type="hidden" name="url" id="url"
+					th:value="${url}" /> 
+					
+				<div class="panel panel-default">
+					<div class="panel-heading">
+					</div>
+
+					<div class="panel-body">
+						<div class="table-responsive" style="overflow-x: scroll;">
+							<table class="table table-striped table-bordered table-hover"
+								id="eliminarRol">
+								<thead>
+									<tr>
+										<th style="text-align: center;">Valor origen</th>
+										<th style="text-align: center;">Valor est&aacute;ndar</th>
+
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="odd gradeX"
+										th:each="valorTipico : ${versionColumna.tipificacion.valorTipico}">
+										<td th:text="${valorTipico.valor}" style="text-align: center;"></td>
+										<td style="text-align: center;">
+											<select class="correspondencia form-control" th:id="@{select_}+${valorTipico.id}" th:name="@{select_}+${valorTipico.id}" th:attr="onchange=|emparejarValorTipico(${valorTipico.id})|" required="required">
+													<option value="">Valor est&aacute;ndar</option>
+													<option th:each="valor: ${estandar.valoresTipicosEstandar}"
+														th:value="${valor.id}"
+														th:text="${valor.valorTipico}"></option>
+											</select>
+											<input th:id="@{valorEstandar_}+${valorTipico.id}" th:name="valorEstandar" type="text" hidden="">
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<button type="submit" class="btn btn-normal">
+								Guardar <i class="fa fa-save"></i> 
+							</button>
+							<a href="#" th:href="${url}" class="btn btn-secun"
+								type="button">Cancelar <i class="fa fa-times-circle"
+								aria-hidden="true"></i> 
+							</a>
+						</div>
+					</div>
+					<!-- /.panel-body -->
+				</div>
+				<!-- /.panel -->
+			</form><br>
+			<a th:href="${url}" class="btn btn-secun"><i
+		class="fa fa-backward" aria-hidden="true"></i> Regresar</a> 
+			<!-- /form -->
+		</div>
+		<!-- /.col-lg-6 -->
+	</div>
+	
+	<!-- MODAL PARA SOLICITAR CONFIRMACION DE ELIMINAR PERMISOS -->
+
+	</contenido>
+	<nuevosScripts> <script>
+		$(document)
+				.ready(
+						function() {
+							var idioma_espanol = {
+								"sProcessing" : "Procesando...",
+								"sLengthMenu" : "Mostrar _MENU_  registros",
+								"sZeroRecords" : "No se encontraron resultados",
+								"sEmptyTable" : "Sin datos disponibles",
+								"sInfo" : "Mostrando del _START_ al _END_ de un total de _TOTAL_ registros",
+								"sInfoEmpty" : "Mostrando registros del 0 al 0 de un total de 0 registros",
+								"sInfoFiltered" : "(filtrado de un total de _MAX_ registros)",
+								"sInfoPostFix" : "",
+								"sSearch" : "Buscar: ",
+								"sUrl" : "",
+								"sInfoThousands" : ",",
+								"sLoadingRecords" : "Cargando...",
+								"oPaginate" : {
+									"sFirst" : "Primero",
+									"sLast" : "Último",
+									"sNext" : "Siguiente",
+									"sPrevious" : "Anterior"
+								},
+								"oAria" : {
+									"sSortAscending" : ": Activar para ordenar la columna de manera ascendente",
+									"sSortDescending" : ": Activar para ordenar la columna de manera descendente"
+								},
+								"buttons" : {
+									"copy" : "Copiar",
+									"colvis" : "Visibilidad"
+								}
+							} //fin para traduccion
+
+							$('#agregarRol').dataTable({
+								"language" : idioma_espanol
+							});
+
+							$('#eliminarRol').dataTable({
+								"language" : idioma_espanol
+							});
+							$('.correspondencia').select2({
+								theme: "classic"
+								});	
+
+						});
+	</script> 
+	<script>
+	function emparejarValorTipico(valorTipicoId) {
+		let selectId = "select_" + valorTipicoId;
+		let estandarId = "valorEstandar_" + valorTipicoId;
+		let valor = document.getElementById(selectId);
+		document.getElementById(estandarId).value = valorTipicoId + ","
+				+ valor.value;
+		//console.log(estandarId);
+	}
+	</script>
+ </nuevosScripts>
+</body>
+</html>

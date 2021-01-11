@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Estandarizar -> Gesti&oacute;n de estandarizaci&oacute;n -> Estructura de tabla</b>
+				</h5>
+				<hr />
+				<h4>Estructura de tabla: <strong th:if="${tabla !=null}" th:text="${tabla.nombreTablaCorrespondiente}"></strong> </h4>
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+
+					<div class="table-responsive" style="overflow-x: scroll;">
+						<table class="table table-striped table-bordered table-hover"
+							id="agregarDatatable">
+							<thead>
+								<tr>
+									<th style="text-align: center;">Columna</th>
+									<th style="text-align: center;">Es null</th>
+									<th style="text-align: center;">Tipo de dato</th>
+									<th style="text-align: center;">Maximo caracteres</th>
+									<th style="text-align: center;">Precision</th>
+									<th style="text-align: center;">Escala</th>
+									<th style="text-align: center;">Default</th>
+								</tr>
+
+							</thead>
+							<tbody>
+								<tr class="odd gradeX" th:each="fila: ${estructura}">
+									<td th:each="valor : ${fila}" th:text="${valor}"></td>
+								</tr>
+							</tbody>
+						</table>
+
+					</div>
+					<a href="#" th:href="@{/estandarizar/start_job}" class="btn btn-secun">
+					<i class="fa fa-backward" aria-hidden="true"></i> Regresar</a>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	
+	
+	</contenido>
+	<nuevosScripts>
+	</nuevosScripts>
+</body>
+</html>

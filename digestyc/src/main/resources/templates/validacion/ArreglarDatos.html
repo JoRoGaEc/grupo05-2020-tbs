@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b th:if="${pre == 'previsualizacion'}">Validar datos ->Registros -> Gesti&oacute;n de validaci&oacute;n -> Previzualizar los errores / incoherencias</b>
+					<b th:if="${pre == 'validar'}">Validar datos -> Registros -> Gesti&oacute;n de validaci&oacute;n -> Corregir los errores / incoherencias</b>
+				</h5>
+				<hr />
+				<h4>
+					<b th:if="${pre == 'previsualizacion'}">Previzualizar los errores / incoherencias</b> 
+					<b th:if="${pre == 'validar'}"	>Corregir los errores / incoherencias</b>
+				</h4>
+			</div>
+		</div>
+	</div>
+	<span th:if="${pre == 'validar'}">
+		<div class="col-lg-12" style="color: #697185;">
+			NOTA:<b style="color: green; font-size: medium">&ast;</b><small><p
+					style="text-align: justify">
+					<label>Por cada fila solo puede editar una columna, es
+						decir, que si las filas se repiten significa que hay mas errores
+						en otras columnas</label>
+				</p></small>
+		</div>
+	</span>
+	<div>
+		<a th:if="${pre == 'previsualizacion'}"
+			th:href="@{/reparar/}+${table.id}+@{/tabla/10/0/validar}"
+			class="btn btn-accion">Corregir Errores <i class="fa fa-edit fa-lg"></i>
+			
+		</a>
+	</div>
+	<br>
+	<div>
+		<b th:if="${notificacion !=null}" th:text="${notificacion.mensaje}"></b>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<b >
+						ERRORES DE TABLA <strong th:if="${table}"
+							th:text="${table.nombre}"></strong>
+					</b>
+					<p th:if="${success}" class="alert alert-bien text-center">Se editaron los datos correctamente</p>
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body"
+					th:if="${table!=null and table.estado>=0 and table.estado<=2}">
+					<form th:action="@{/reparar/guardar}" method="POST">
+						<input type="hidden" name="${_csrf.parameterName}"
+							value="${_csrf.token}" /> <input name="id" id="id"
+							th:value="${table.id}" hidden=""> <input name="skip"
+							th:value="${skip}" hidden=""> <input name="inf"
+							th:value="${inf}" hidden="">
+						<div class="table-responsive" style="overflow:scroll;">
+							<table class="table table-striped table-bordered table-hover" id="ScrollTabla">
+								<thead>
+									<tr>
+										<th style="text-align: center;">#fila</th>
+										<th style="text-align: center;"
+											th:each="map : ${cabeceras.data}" th:text="${map.key}"></th>
+									</tr>
+
+								</thead>
+								<tbody>
+									<tr th:each="error: ${errores}">
+										<td th:text="${error.fila}"></td>
+										<td th:each="data: ${error.data}">
+											<div th:if="${data.key == error.columna}">
+												<label th:if="${pre == 'validar'}"> <input
+													th:name="@{value}+${error.id}" th:value="${data.value}"
+													class="form-control"> <strong
+													th:text="@{Debe ser: }+${error.tipoDato}"
+													class="text-danger"></strong>
+												</label> <label th:if="${pre == 'previsualizacion'}"> <strong
+													th:text="${data.value}" class="text-danger"></strong> <label
+													style="color: blue;"
+													th:text="@{ No es del tipo: }+${error.tipoDato}"></label>
+												</label>
+											</div> <label th:if="${data.key != error.columna}"
+											th:text="${data.value}"> </label>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<nav aria-label="Page navigation example"
+								class="table-responsive">
+								<ul class="pagination mb-0 justify-content-end">
+									<li th:if="${current < 1}" class="page-item disabled"><a
+										class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+									</li>
+									<li th:if="${current >= 1}" class="page-item"><a
+										class="page-link" href="#"
+										th:href="@{/reparar/}+${table.id}+@{/tabla/}+${skip}+@{/}+${current-skip}+@{/}+${pre}"
+										tabindex="1">Anterior</a></li>
+
+
+									<li th:each="pagina : ${paginas}" class="page-item"><a
+										th:if="${pagina != -1}" class="page-link" href="#"
+										th:href="@{/reparar/}+${table.id}+@{/tabla/}+${skip}+@{/}+${pagina*skip}+@{/}+${pre}"
+										th:text="${pagina+1}"></a></li>
+
+									<li th:if="${current>= last}" class="page-item disabled">
+										<a class="page-link" href="#" aria-disabled="true">&Uacute;ltimo</a>
+									</li>
+									<li th:if="${last > current}" class="page-item"><a
+										class="page-link" href="#"
+										th:href="@{/reparar/}+${table.id}+@{/tabla/}+${skip}+@{/}+${current+skip}+@{/}+${pre}">Siguiente</a>
+									</li>
+									<li th:if="${last > current}" class="page-item"><a
+										class="page-link" href="#"
+										th:href="@{/reparar/}+${table.id}+@{/tabla/}+${skip}+@{/}+${last*skip}+@{/}+${pre}">&Uacute;ltimo</a>
+									</li>
+
+								</ul>
+							</nav>
+							<button class="btn btn-normal" th:if="${pre == 'validar'}"
+								type="submit">
+								Guardar <i class="fa fa-floppy-o" aria-hidden="true"></i> 
+							</button>
+							<span th:if="${pre == 'validar'}"><a href="#"
+								th:href="@{/validacion/start_job}" class="btn btn-secun"
+								type="button">Cancelar <i class="fa fa-times-circle"
+									aria-hidden="true"></i> 
+							</a> </span>
+						</div>
+					</form>
+					<br>
+					<a href="#" th:href="@{/validacion/start_job}" class="btn btn-secun"><i
+						class="fa fa-backward" aria-hidden="true"></i> Regresar</a>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+
+	</contenido>
+	<nuevosScripts>
+	</nuevosScripts>
+</body>
+</html>

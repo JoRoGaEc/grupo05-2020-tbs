@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html >
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+<body th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Gesti&oacute;n de Tipificaciones -> Tipificaciones</b>
+				</h5>
+				<hr/>
+				<h4> Listado de Tipificaciones</h4>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div style="float: right">
+				<a class="btn btn-accion" th:href="@{/tipificacion/nuevo}">Nueva <i class="fa fa-plus"
+					aria-hidden="true"></i> 
+				</a>
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<p th:if="${success == 'delete'}" class="alert alert-bien text-center">Eliminaci&oacute;n exitosa</p>
+                    <p th:if="${success == 'edit'}" class="alert alert-bien text-center">Actualizaci&oacute;n exitosa</p>
+                    <p th:if="${success == 'insert'}" class="alert alert-bien text-center">Registro creado exitosamente</p>
+                    <p th:if="${error == 'insert'}" class="alert alert-mal text-center">Registro No creado </p>
+                    <p th:if="${error == 'delete'}" class="alert alert-mal text-center">No se puede eliminar, es posible que este asociado</p>
+                    <p th:if="${error == 'DATO'}" class="alert alert-mal text-center">Debe seleccionar un tipo de dato</p>
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<div class="table-responsive" style="overflow-x: scroll;">
+						<table class="table table-striped table-bordered table-hover"
+							id="agregarDatatable">
+							<thead>
+								<tr>
+									<!-- <th style="text-align: center;">ID</th> -->
+									<th style="text-align: center;">Nombre</th>
+									<th style="text-align: center;">Descripci&oacute;n</th>
+                                    <th style="text-align: center;">Tipo de dato</th>
+                                    <th style="text-align: center;">Valores</th>
+									<th style="text-align: center;">Acciones</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="odd gradeX" th:each= "tipificacion : ${tipificaciones}">
+									<!-- <td th:text="${tipificacion.id}"></td>-->
+									<td th:text= "${tipificacion.nombre}"></td>
+									<td th:text= "${tipificacion.descripcion}"></td>
+									<td th:if="${tipificacion.variacionTipoDato != null}" th:text= "${tipificacion.variacionTipoDato.tipoDato.tipoDatoSqlServer}"></td>
+									<td th:if="${tipificacion.variacionTipoDato == null}"></td>
+									<td th:if="${tipificacion.variacionTipoDato == null}"></td>
+									<td th:if="${tipificacion.valorTipico != null}">
+										<div th:each="valor : ${tipificacion.valorTipico}">
+											<label th:if="${valor.existeRango == 1}" th:text="@{De: }+' '+${valor.inicioRango}+' '+@{ a }+' '+${valor.finRango}"></label>
+											<label th:if="${valor.existeRango == 3}" th:text="@{De: }+' '+${#dates.format(valor.fechaInicio, 'dd/MM/yyyy')}+' '+@{ a }+' '+${#dates.format(valor.fechaFin, 'dd/MM/yyyy')}"></label>
+											<label th:if="${valor.existeRango == 2}" th:text="${valor.valor}"></label>
+										</div>
+									</td>
+
+									<td style="text-align: center;">
+										<a type="button" href="#" th:href="@{/tipificacion/editar/}+${tipificacion.id}+@{/}" class="btn btn-accion btn-sm">
+											Editar <i class="fa fa-edit fa-lg"></i> 
+										</a> 
+										 <a href="#" class="btn btn-accion btn-sm" 
+											th:attr="onclick=|crearModalEliminar(${tipificacion.id}, '${tipificacion.nombre}')|"> 
+										    Eliminar <i class="fa fa-trash-o" aria-hidden="true"></i> 
+										 </a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<a href="#" th:href="@{/index}" class="btn btn-accion">Inicio <i class="fa fa-home" aria-hidden="true"></i> </a>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+
+	
+	<!-- MODAL PARA ELIMINAR TIPIFICACION -->
+	<div class="modal fade" id="eliminarTipificaionModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel">
+					<div class="panel-heading" style="text-align: center;">
+						<b style="color: #6A83BE;">ELIMINAR TIPIFICACI&Oacute;N</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<form action="#" th:action="@{/tipificacion/remover}" method="POST" class="was-validated">
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+							<input type="number" value="" id="id_eliminar" name="id_eliminar" hidden="" readonly="readonly"/>
+							<div class="modal-body">
+							<label style="color: #6A83BE;">&iquest;Desea Eliminar&quest;</label>
+								<hr>
+								<div class="form-group">
+									<label style="color: #697185;" for="nombre">NOMBRE</label> <input type="text"
+										class="form-control" name="eliminar_nombre"
+										id="eliminar_nombre" value="" required readonly="readonly">
+								</div>
+								<!--  <div class="form-group">
+									<label style="color: #697185;" for="descripcion">DESCRIPCI&Oacute;N</label> 
+									<textarea style="resize: none;" rows="4" class="form-control" name="eliminar_descripcion" id="eliminar_descripcion" 
+									     value="" required readonly="readonly"></textarea>
+								</div>-->
+								
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-normal" type="submit">
+									Aceptar <i class="fa fa-check-circle" aria-hidden="true"></i> 
+								</button>
+								<a href="#" data-dismiss="modal"
+									class="btn btn-secun" type="button">Cancelar <i
+									class="fa fa-times-circle" aria-hidden="true"></i> 
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	</contenido>
+	
+	<nuevosScripts>
+		<script>
+			function crearModalEliminar(id, nombre, descripcion){
+				document.getElementById('id_eliminar').value = id;
+				document.getElementById('eliminar_nombre').value = nombre;
+				//document.getElementById('eliminar_descripcion').value = descripcion;
+				$('#eliminarTipificaionModal').modal();
+				console.log(nombre);
+			}
+			
+		</script>
+	</nuevosScripts>
+	
+</body>
+</html>

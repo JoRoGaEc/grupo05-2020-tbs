@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Gesti&oacute;n de Seguridad -> Roles</b>
+				</h5>
+				<hr />
+				<h4>Listado de Roles</h4>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div style="float: right">
+				<a type="button" class="btn btn-accion" data-toggle="modal"
+					data-target="#agregarRolModal">Nuevo <i class="fa fa-plus"
+					aria-hidden="true" href="#" th:href="@{/roles/rolform(id=0)}"></i>
+					
+				</a>
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<p th:if="${success == 'delete'}"
+						class="alert alert-bien text-center">Eliminaci&oacute;n
+						exitosa</p>
+					<p th:if="${success == 'edit'}"
+						class="alert alert-bien text-center">Actualizaci&oacute;n
+						exitosa</p>
+					<p th:if="${success == 'insert'}"
+						class="alert alert-bien text-center">Registro creado
+						exitosamente</p>
+					<p th:if="${unico == 'insert'}"
+						class="alert alert-mal text-center">Registro No creado, Ya
+						Existe un Rol con ese Nombre</p>
+					<p th:if="${error == 'insert'}"
+						class="alert alert-mal text-center">
+						Registro No creado, por algunas de las siguientes razones: <br>
+						- El Nombre debe tener m&aacute;ximo 50 car&aacute;cteres<br>
+						- El C&oacute;digo debe tener m&aacute;ximo 20 car&aacute;cteres<br>
+						- La Descripci&oacute;n debe tener m&aacute;ximo 1024
+						car&aacute;cteres<br>
+					</p>
+					<p th:if="${error == 'edit'}"
+						class="alert alert-mal text-center">
+						Registro No Actualizado, por algunas de las siguientes razones: <br>
+						- El Nombre debe tener m&aacute;ximo 50 car&aacute;cteres<br>
+						- El C&oacute;digo debe tener m&aacute;ximo 20 car&aacute;cteres<br>
+						- La Descripci&oacute;n debe tener m&aacute;ximo 1024
+						car&aacute;cteres<br>
+					</p>
+					<p th:if="${unico == 'edit'}"
+						class="alert alert-mal text-center">Registro No
+						Actualizado, Ya Existe un Rol con ese Nombre</p>
+
+					<p th:if="${error == 'delete'}"
+						class="alert alert-mal text-center">No se puede eliminar,
+						es posible que este asociado a un usuario</p>
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<div class="table-responsive" style="overflow-x: scroll;">
+						<table class="table table-striped table-bordered table-hover"
+							id="agregarDatatable">
+							<thead>
+								<tr>
+									<th style="text-align: center;">Nombre</th>
+									<th style="text-align: center;">Descripci&oacute;n</th>
+									<th style="text-align: center;">C&oacute;digo</th>
+									<th style="text-align: center;">Acciones</th>
+								</tr>
+
+							</thead>
+							<tbody>
+								<tr class="odd gradeX" th:each="rol: ${roles}">
+									<td th:text="${rol.nombre}"></td>
+									<td th:text="${rol.descripcion}"></td>
+									<td th:text="${rol.codigo}"></td>
+
+									<td style="text-align: center;"><a type="button" href="#"
+										th:href="@{/roles/agregarpermiso/}+${rol.id}+@{/}"
+										class="btn btn-accion btn-sm">Permisos <i class="fa fa-list-ol"
+											aria-hidden="true"></i> 
+									</a> <a type="button" href="#" class="btn btn-accion btn-sm"
+										th:attr="onclick=|crearModalRol(${rol.id}, '${rol.nombre}', '${rol.descripcion}', '${rol.codigo}')|">
+											Editar <i class="fa fa-edit fa-lg"></i> 
+									</a> <a href="#" class="btn btn-accion btn-sm"
+										th:attr="onclick=|crearModalEliminar(${rol.id}, '${rol.nombre}')|">
+											Eliminar <i class="fa fa-trash-o" aria-hidden="true"></i> 
+									</a></td>
+
+								</tr>
+
+
+
+							</tbody>
+						</table>
+					</div>
+					<a href="#" th:href="@{/index}" class="btn btn-accion">Inicio <i
+							class="fa fa-home" aria-hidden="true"></i></a>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+
+	<!-- MODAL PARA AGREGAR ROLES -->
+	<div class="modal fade" id="agregarRolModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel">
+					<div class="panel-heading" style="text-align: center;">
+						<b style="color: #6A83BE;">NUEVO ROL</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<form action="#" th:action="@{/roles/addrol}"
+							th:object="${rolModel}" method="POST" class="was-validated">
+							<input type="hidden" th:field="*{id}" />
+							<div class="panel-heading" style="text-align: center;">
+								<small style="color: #696969">Los campos marcados con <b
+									style="color: red; font-size: medium">&ast;</b> son
+									obligatorios
+								</small>
+							</div>
+							<div class="modal-body">
+								<div class="form-group">
+									<!-- <label for="nombre">NOMBRE <b style="color: red; font-size: medium">&ast;</b></label> --> 
+									<input	type="text" class="form-control" name="nombre"
+										th:field="*{nombre}" th:value="${nombre}" placeholder="Nombre *" required />
+								</div>
+								<div class="form-group">
+									<!--  <label id="label-1">C&Oacute;DIGO</label>-->
+									<input type="text"
+										class="form-control" name="codigo" th:field="*{codigo}"
+										th:value="${codigo}" placeholder="C&oacute;digo " />
+								</div>
+								<div class="form-group">
+									<!--  <label for="descripcion">DESCRIPCI&Oacute;N <b style="color: red; font-size: medium">&ast;</b></label>-->
+									<textarea style="resize: none;" rows="4" type="text"
+										class="form-control" name="descripcion"
+										th:field="*{descripcion}" th:value="${descripcion}" placeholder="Descripci&oacute;n *" required>
+									</textarea>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-normal" type="submit">
+									Guardar <i class="fa fa-floppy-o" aria-hidden="true"></i> 
+								</button>
+								<a href="#" data-dismiss="modal" class="btn btn-secun"
+									type="button">Cancelar <i class="fa fa-times-circle"
+									aria-hidden="true"></i> 
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- MODAL PARA EDITAR ROL -->
+	<div class="modal fade" id="editarRolModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel">
+					<div class="panel-heading" style="text-align: center;">
+						<b style="color: #6A83BE;">EDITAR ROL</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<form action="#" th:action="@{/roles/editrol}" method="POST"
+							class="was-validated">
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" /> <input type="number" value=""
+								id="editar_rol_id" name="editar_rol_id" hidden="" />
+							<div class="panel-heading" style="text-align: center;">
+								<small style="color: #696969">Los campos marcados con <b
+									style="color: red; font-size: medium">&ast;</b> son
+									obligatorios
+								</small>
+							</div>
+							<div class="modal-body">
+								<div class="form-group">
+									<!-- <label for="nombre">NOMBRE <b style="color: red; font-size: medium">&ast;</b></label> -->
+								     <input	type="text" class="form-control" name="editar_rol_nombre"
+										id="editar_rol_nombre" value="" placeholder="Nombre *"required>
+								</div>
+								<div class="form-group">
+									<!--  <label id="label-1">C&Oacute;DIGO</label>-->
+									 <input type="text"
+										class="form-control" name="editar_rol_codigo"
+										id="editar_rol_codigo" placeholder="C&oacute;digo " value="">
+								</div>
+								<div class="form-group">
+								<!--  <label for="descripcion">DESCRIPCI&Oacute;N <b style="color: red; font-size: medium">&ast;</b></label>-->
+								<textarea style="resize: none;" rows="4" class="form-control"
+										name="editar_rol_descripcion" id="editar_rol_descripcion"
+										placeholder="Descripci&oacute;n *" required>
+									
+									</textarea>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-normal" type="submit">
+									Actualizar <i class="fa fa-refresh" aria-hidden="true"></i> 
+								</button>
+								<a href="#" data-dismiss="modal" class="btn btn-secun"
+									type="button">Cancelar <i class="fa fa-times-circle"
+									aria-hidden="true"></i> 
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- MODAL PARA ELIMINAR ROL -->
+	<div class="modal fade" id="eliminarRolModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel">
+					<div class="panel-heading" style="text-align: center;">
+						<b style="color: #6A83BE;">ELIMINAR ROL</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<form action="#" th:action="@{/roles/removerol}" method="POST"
+							class="was-validated">
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" /> <input type="number" value=""
+								id="id_eliminar" name="id_eliminar" hidden=""
+								readonly="readonly" />
+							<div class="modal-body">
+								<label style="color: #6A83BE;">&iquest;Desea Eliminar&quest;</label>
+								<hr>
+								<div class="form-group">
+									<label style="color: #697185;" for="nombre">NOMBRE</label> <input type="text"
+										class="form-control" name="eliminar_nombre"
+										id="eliminar_nombre" value="" required readonly="readonly">
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-normal" type="submit">
+									Aceptar <i class="fa fa-check-circle" aria-hidden="true"></i> 
+								</button>
+								<a href="#" data-dismiss="modal" class="btn btn-secun"
+									type="button">Cancelar <i class="fa fa-times-circle"
+									aria-hidden="true"></i> 
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	</contenido>
+
+	<nuevosScripts> <script>
+		function crearModalRol(id, nombre, descripcion, codigo) {
+			//alert("No ingreso a esta funcion");  //Con una variable que escribamos mal aqui no funciona para nada el modal 
+			document.getElementById('editar_rol_id').value = id;
+			document.getElementById('editar_rol_nombre').value = nombre;
+			document.getElementById('editar_rol_descripcion').value = descripcion;
+			document.getElementById('editar_rol_codigo').value = codigo;
+			$('#editarRolModal').modal();
+			console.log(id + " " + nombre);
+		}
+
+		function crearModalEliminar(id, nombre) {
+			document.getElementById('id_eliminar').value = id;
+			document.getElementById('eliminar_nombre').value = nombre;
+			$('#eliminarRolModal').modal();
+			console.log(nombre);
+		}
+	</script> <script>
+		window.onload = function() {
+			//alert("Javascript especifico");
+		};
+	</script> </nuevosScripts>
+
+</body>
+</html>

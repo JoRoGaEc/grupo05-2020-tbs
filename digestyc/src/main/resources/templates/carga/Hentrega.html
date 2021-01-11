@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Cargar datos -> Historial de entregas -> Entregas</b>
+				</h5>
+				<hr />
+				<h4>Historial de Entregas de Registros</h4>
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<form action="#" th:action="@{/HistorialEntrega/Filtro}" method="GET">
+			<div class="col-lg-3">
+				<div class="form-group">
+					<label style="color: #697185;">INSTITUCI&Oacute;N </label> 
+					<select
+						class="institucion form-control" name="institucion"
+						th:value="${institucion}">
+						<option value="" selected="selected">Seleccione una
+							opci&oacute;n</option>
+						<option th:each="i : ${instituciones}" th:text="${i.nombre}"
+							th:value="${i.nombre}">
+					</select>
+				</div>
+			</div>
+			<div class="col-lg-3">
+				<div class="form-group">
+					<label style="color: #697185;">TIPO DE REGISTRO </label> <select class="tipo form-control"
+						name="tiporegistro" th:value="${tiporegistro}">
+						<option value="" selected="selected">Seleccione una
+							opci&oacute;n</option>
+						<option th:each="tipo : ${tipoRegistros}" th:text="${tipo.nombre}"
+							th:value="${tipo.nombre}">
+					</select>
+				</div>
+			</div>
+			<div class="col-lg-3">
+				<div class="form-group">
+					<label style="color: #697185;">PERIODICIDAD </label> <select
+						class="periodicidad form-control" name="periodicidad"
+						th:value="${periodicidad}">
+						<option value="" selected="selected">Seleccione una
+							opci&oacute;n</option>
+						<option th:each="periodicidad : ${periodicidades}"
+							th:text="${periodicidad.nombre}"
+							th:value="${periodicidad.nombre}">
+					</select>
+				</div>
+			</div>
+			<div class="col-lg-1">
+				<div class="form-group">
+					<br>
+					<button type="submit" class="btn btn-accion" href="">
+						Filtrar <i class="fa fa-filter" aria-hidden="true"></i> 
+					</button>
+				</div>
+			</div>
+			<div class="col-lg-1">
+				<div class="form-group">
+					<br>
+					<button id="btnLimpiar" class="btn btn-secun">
+						Limpiar <i class="fa fa-eraser" aria-hidden="true"></i> 
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading"></div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+
+					<div class="table-responsive" style="overflow-x: scroll;">
+						<table class="table table-striped table-bordered table-hover"
+							id="agregarDatatable">
+							<thead>
+								<tr>
+									<th style="text-align: center;">Nombre del registro</th>
+									<th style="text-align: center;">Fecha Entrega</th>
+									<th style="text-align: center;">Hora</th>
+									<th style="text-align: center;">Instituci&oacute;n</th>
+									<th style="text-align: center;">Tipo de Registro</th>
+									<th style="text-align: center;">Periodicidad</th>
+									<!-- <th style="text-align: center;">Archivo</th> -->
+							</thead>
+							<tbody>
+								<tr class="odd gradeX" th:each="entrega: ${entregas}">
+									<td th:if="${entrega.registro}"
+										th:text="${entrega.registro.nombre}"></td>
+									<td style="text-align: center;"
+										th:text="${#dates.format(entrega.fechaEntrega, 'dd/MM/yyyy')}"></td>
+									<td style="text-align: center;"
+										th:text="${#dates.format(entrega.fechaEntrega, 'HH:mm:ss')}"></td>
+									<td th:if="${entrega.registro.institucion}"
+										th:text="${entrega.registro.institucion.nombre}"></td>
+									<td style="text-align: center;"
+										th:if="${entrega.registro.tipoRegistro}"
+										th:text="${entrega.registro.tipoRegistro.nombreCorto}"></td>
+									<td th:if="${entrega.registro.periodicidad}"
+										th:text="${entrega.registro.periodicidad.nombre}"></td>
+									<!-- <td style="text-align: center;"><a href="#"
+										class="btn btn-success btn-sm" type="button"><i
+											class="fa fa-download" aria-hidden="true"></i> Descargar</a></td>-->
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<a href="#" th:href="@{/index}" class="btn btn-accion" type="button">
+						Inicio <i class="fa fa-home" aria-hidden="true"></i> 
+					</a> <a href="#" th:href="@{/HistorialEntrega/listar}"
+						class="btn btn-accion" type="button">Ver todas las entregas <i class="fa fa-eye"
+						aria-hidden="true"></i></a>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	</contenido>
+
+	<nuevosScripts> <script>
+		$(document).ready(function() {
+			$('.periodicidad').select2({
+				theme: "classic"
+				});
+			$('.institucion').select2({
+				theme: "classic"
+				});
+			$('.tipo').select2({
+				theme: "classic"
+				});
+			cerrarTodo();
+						
+		const limpiar = () => {
+		    $select.empty();
+		 };
+		$("#btnLimpiar").click(limpiar);
+	});
+	</script> </nuevosScripts>
+</body>
+</html>

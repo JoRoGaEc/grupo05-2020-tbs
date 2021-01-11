@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Validar datos -> Registros -> Gesti&oacute;n de validaci&oacute;n</b>
+				</h5>
+				<hr />
+				<h4>Gesti&oacute;n de validaci&oacute;n</h4>
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<p th:if="${success}" class="alert alert-bien text-center"> <b>&iexcl;JOB EJECUTADO!</b></p>
+					<p th:if="${ready}" class="alert alert-bien text-center"> <b>&iexcl;DATOS ALMACENADOS, VUELVA A EJECUTAR EL JOB PARA COMPROBAR SI NO HAY ERRORES!</b></p>
+					<p th:if="${validating}" class="alert alert-mal text-center"><b>&iexcl;YA SE VALIDO ESTA TABLA!</b><br> Debe resolver los conflictos actuales para poder continuar</p>
+					<p th:if="${validated}" class="alert alert-mal text-center"><b>&iexcl;NO PUEDE VOLVER A VALIDAR LA TABLA!</b><br> Ya se valido y arreglaron los errores / incoherencias</p>
+					<p th:if="${tableNotFound}" class="alert alert-mal text-center"><b>&iexcl;No se encontr&oacute; la tabla!</b><br> Verifique si existe o contacte al administrador de la base de datos</p>
+					<p th:if="${notArchivo}" class="alert alert-mal text-center"><b>&iexcl;No se encontr&oacute; el ID del archivo!</b><br> Verifique si existe o contacte al administrador de la base de datos</p>
+					<p th:if="${notTipificacion}" class="alert alert-mal text-center"><b>&iexcl;Las tipificaciones no concuerdan con el n&uacute;mero de columnas!</b><br> Verifique si todas las columnas tienen asignadas tipificaci&oacute;n o contacte al administrador de la base de datos</p>
+					<p th:if="${notEntrega}" class="alert alert-mal text-center"><b>&iexcl;No se encontr&oacute; el ID de la entrega!</b><br> Verifique si existe o contacte al administrador de la base de datos</p>
+					<p th:if="${withOutError}" class="alert alert-bien text-center"> <b>&iexcl;NO HAY ERRORES!</b></p>
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+
+					<div class="table-responsive" style="overflow-x: scroll;">
+						<table class="table table-striped table-bordered table-hover"
+							id="agregarDatatable">
+							<thead>
+								<tr>
+									<th style="text-align: center;">Tabla</th>
+									<th style="text-align: center;">Entrega</th>
+									<th style="text-align: center;">Periodo</th>
+									<th style="text-align: center;">Acciones</th>
+								</tr>
+
+							</thead>
+							<tbody>
+								<tr class="odd gradeX" th:each="tabla: ${tablas}">
+									<td th:text="${tabla.nombre}"></td>
+									<td> <label th:if="${tabla.archivo}" th:text="${tabla.archivo.nombre}"></label> </td>
+									<td><label th:if="${tabla.archivo}" th:text="${tabla.archivo.entrega.periodo.nombre}"></label></td>
+									
+
+									<td style="text-align: center;">
+										<form th:action="@{/validacion/start_job}" method="POST">
+											<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+											<input name="nombre" th:value="${tabla.nombre}" hidden="">
+											<input name="id" th:value="${tabla.id}" hidden="">
+											<button type="submit"  class="btn btn-accion">Empezar job <i class="fa fa-spinner" aria-hidden="true"></i></button>
+											<a th:if="${tabla.estado < 2 && tabla.estado >= 0}" th:href="@{/reparar/}+${tabla.id}+@{/tabla/10/0/validar}"  class="btn btn-accion ">Corregir Errores <i class="fa fa-edit fa-lg"></i></a>
+											<a th:if="${tabla.estado < 2 && tabla.estado >= 0}" th:href="@{/reparar/}+${tabla.id}+@{/tabla/10/0/previsualizacion}" class="btn btn-accion">Previsualizar <i class="fa fa-expand" aria-hidden="true"></i></a>
+											<a  th:if="${tabla.estado <= 2 && tabla.estado >= 0}" th:href="@{/reparar/}+${tabla.id}+@{/datos_completos/10/0/verDatos}"  class="btn btn-accion">Datos Completos <i class="fa fa-eye" aria-hidden="true"></i></a>
+											<a  th:if="${tabla.estado == 2}" th:href="@{/estandarizar/start_job}"  class="btn btn-accion">Estandarizar <i class="fa fa-link" aria-hidden="true"></i></a>
+										</form>
+										
+									</td>
+								</tr>
+							</tbody>
+						</table>
+
+					</div>
+					<a href="#" th:href="@{/index}" class="btn btn-accion" type="button">
+						Inicio <i class="fa fa-home" aria-hidden="true"></i> 
+					</a>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	
+	</contenido>
+	<nuevosScripts> </nuevosScripts>
+</body>
+</html>

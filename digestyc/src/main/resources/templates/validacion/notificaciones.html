@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Validar datos -> Registros -> Notificaciones</b>
+				</h5>
+				<hr />
+				<h4>Listado de Notificaciones</h4>
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+				    <p th:if="${tableNotFound}" class="alert alert-mal text-center"><b>&iexcl;No se encontro la tabla!</b><br> Verifique si existe o contacte al administrador de la base de datos</p>
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+
+					<div class="table-responsive" style="overflow-x: scroll;">
+						<table class="table table-striped table-bordered table-hover"
+							id="agregarDatatable">
+							<thead>
+								<tr>
+									<th style="text-align: center;">#</th>
+									<th style="text-align: center;">Titulo</th>
+									<th style="text-align: center;">Mensaje</th>
+									<th style="text-align: center;">Tabla</th>
+									<th style="text-align: center;">Errores</th>
+									<th style="text-align: center;">Acci&oacute;n</th>
+								</tr>
+
+							</thead>
+							<tbody>
+								<tr class="odd gradeX" th:each="noti: ${notificaciones}">
+									<td th:text="${noti.id}"></td>
+									<td th:text="${noti.titulo}"></td>
+									<td th:text="${noti.mensaje}"></td>
+									<td th:text="${noti.tabla}"></td>
+									<td th:text="${noti.cantidadErrores}"></td>
+									<td> <a th:href="@{/reparar/}+${noti.tablaId}+@{/tabla/10/0/previsualizacion?notificacion=}+${noti.id}" class="btn btn-warning"> <i class="fa fa-expand" aria-hidden="true"></i> Previsualizar </a> </td>
+								</tr>
+							</tbody>
+						</table>
+
+					</div>
+					<a href="#" th:href="@{/index}" class="btn btn-accion" type="button">
+						Inicio <i class="fa fa-home" aria-hidden="true"></i> 
+					</a>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	
+	</contenido>
+	<nuevosScripts> </nuevosScripts>
+</body>
+</html>

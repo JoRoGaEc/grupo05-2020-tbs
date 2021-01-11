@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Gesti&oacute;n de Seguridad -> Usuarios -> Nuevo usuario</b>
+				</h5>
+				<hr/>
+				<h4>Nuevo Usuario</h4>
+			</div>
+		</div>
+	</div>
+	<!-- /.row -->
+	<div class="row">
+		<div class="col-lg-11">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<p th:if="${unicos}" th:text="${unicos}" class="text-danger"></p>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="panel-heading" style="text-align: left;">
+							<small style="color: #696969">Los campos marcados con <b
+								style="color: red; font-size: medium">&ast;</b> son obligatorios
+							</small>
+						</div>
+						<form role="form" action="#"
+							th:action="@{/usuarios/guardarUsuario}" method="POST"
+							th:objects="*{usuario}">
+							<div class="col-sm-6">
+								<input type="hidden" name="${_csrf.parameterName}"
+									value="${_csrf.token}" /> <input type="number" id="id"
+									name="id" th:fields="*{id}" th:value="${usuario.id}" hidden="">
+								<input type="number" id="nuevo" name="nuevo" th:value="${nuevo}"
+									hidden="">
+								<div class="form-group">
+									<!-- <label class="control-label" for="nombre">NOMBRES <b style="color: red; font-size: medium">&ast;</b></label> -->
+									 <input
+										type="text" class="form-control" id="nombre" name="nombre"
+										placeholder="Nombres *" th:fields="*{nombre}"
+										th:value="${usuario.nombre}" required>
+									<p th:if="${#fields.hasErrors('usuario.nombre')}"
+										th:errors="*{usuario.nombre}" class="text-danger"></p>
+								</div>
+								<div class="form-group">
+									<!-- <label class="control-label" for="apellido">APELLIDOS <b style="color: red; font-size: medium">&ast;</b></label> --> 
+										<input
+										type="text" class="form-control" id="apellido" name="apellido"
+										placeholder="Apellidos *" th:fields="*{apellido}"
+										th:value="${usuario.apellido}" required>
+									<p th:if="${#fields.hasErrors('usuario.apellido')}"
+										th:errors="*{usuario.apellido}" class="text-danger"></p>
+								</div>
+								<div class="form-group">
+									<!--  <label class="control-label" for="password">INSTITUCI&Oacute;N</label>-->
+									<p th:if="${#fields.hasErrors('usuario.institucion')}"
+										th:errors="*{usuario.institucion}" class="text-danger"></p>
+									<select class="institucion form-control" name="inst_id"
+										id="inst_id">
+										<option value="" disabled="disabled" selected="selected">Instituci&oacute;n *</option>
+										<option th:each="institucion: ${instituciones}"
+											th:value="${institucion.id}" th:text="${institucion.nombre}"></option>
+									</select>
+								</div>
+
+
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">
+									<!--  <label class="control-label" for="username">USERNAME |
+										NOMBRE DE USUARIO <b style="color: red; font-size: medium">&ast;</b>
+									</label>--> 
+									<input type="text" class="form-control" id="username"
+										name="username" placeholder="Username | Usuario *"
+										th:fields="*{username}" th:value="${usuario.username}"
+										required>
+									<p th:if="${#fields.hasErrors('usuario.username')}"
+										th:errors="*{usuario.username}" class="text-danger"></p>
+
+								</div>
+								<div class="form-group">
+									<!--  <label class="control-label" for="password">PASSWORD |
+										CONTRASE&Ncaron;A <b style="color: red; font-size: medium">&ast;</b>
+									</label> -->
+									<input type="password" class="form-control" id="password"
+										name="password" placeholder="Password | Contrase&ntilde;a *"
+										th:fields="*{password}" th:value="${usuario.password}"
+										required>
+									<p th:if="${#fields.hasErrors('usuario.password')}"
+										th:errors="*{usuario.password}" class="text-danger"></p>
+								</div>
+								<div class="form-group">
+									<!--  <label class="control-label" for="email">CORREO
+										ELECTR&Oacute;NICO <b style="color: red; font-size: medium">&ast;</b>
+									</label> -->
+									<input type="email" class="form-control" id="email"
+										name="email" placeholder="Correo electr&oacute;nico *" th:fields="*{email}"
+										th:value="${usuario.email}" required>
+									<p th:if="${#fields.hasErrors('usuario.email')}"
+										th:errors="*{usuario.email}" class="text-danger"></p>
+									<p th:if="${emailExiste}" th:text="${emailExiste}"
+										class="text-danger"></p>
+								</div>
+								<div class="form-inline" style="text-align: right;">
+									<button type="submit" class="btn btn-normal">
+										Guardar <i class="fa fa-floppy-o" aria-hidden="true"></i> 
+									</button>
+									<a href="#" th:href="@{/usuarios/listar}"
+										class="btn btn-secun">Cancelar <i
+										class="fa fa-times-circle" aria-hidden="true"></i> 
+									</a>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</contenido>
+
+	<nuevosScripts> <script>
+		$(document).ready(function() {
+			$('.institucion').select2({
+				theme: "classic"
+				});
+		});
+	</script> </nuevosScripts>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html >
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+<body th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Gesti&oacute;n de Seguridad -> Bit&aacute;cora de Actividades</b>
+				</h5>
+				
+				<hr/>
+				<h4>Bit&aacute;cora de Actividades</h4>	
+			</div>			
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+				
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<div class="table-responsive" style="overflow-x: scroll;">
+						<div class="form-inline">
+							<div class="col-lg-6">
+								<label>Mostrar</label>
+								<select class="form-control" onchange="buscar()" id="cantidad">
+									<option value="10">Cantidad</option>
+									<option value="10">10</option>
+									<option value="20">20</option>
+									<option value="40">40</option>
+									<option value="60">60</option>
+									<option value="80">80</option>
+									<option value="100">100</option>
+									<option value="200">200</option>
+									<option value="500">500</option>
+								</select>
+								<label>Registro</label>
+							</div>
+							<div style="text-align: right;" class="col-lg-6">
+								<form method="GET" th:action="@{/bitacora/lista/}+${skip}+@{/0/}">
+									<div class="form-inline">
+										<input type="text" class="form-control" id="buscar" name="buscar" th:value="${buscar}">
+										<button class="btn btn-accion">Buscar <i class="fa fa-search"></i> </button>
+										<button onclick="limpiar()" class="btn btn-secun">Limpiar <i class="fa fa-eraser" aria-hidden="true"></i></button>
+									</div>
+								</form>
+							</div>
+						</div>
+						<br />
+						<br />
+						<br />
+						<table class="table table-striped table-bordered table-hover">
+							<thead>
+								<tr>
+									<th style="text-align: center;">Acci&oacute;n</th>
+                                    <th style="text-align: center;">Usuario</th>
+									<th style="text-align: center;">Vista</th>
+									<th style="text-align: center;">Descripci&oacute;n</th>
+									<th style="text-align: center;">Fecha</th>
+									<th style="text-align: center;">Hora</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="odd gradeX" th:each= "bitacora: ${bitacoras}">
+									<td th:text= "${bitacora.accion}"></td>
+									<td th:text= "${bitacora.usuario}"></td>
+									<td th:text= "${bitacora.vista}"></td>
+									<td th:text= "${bitacora.descripcion}"></td>
+									<td style="text-align: center;" th:text="${#dates.format(bitacora.fecha, 'dd/MM/yyyy')}"></td>
+									<td style="text-align: center;" th:text="${#dates.format(bitacora.fecha, 'HH:mm:ss')}"></td>
+									
+								</tr>
+							</tbody>
+						</table>
+						<nav aria-label="Page navigation example" class="table-responsive">
+						  <ul class="pagination mb-0 justify-content-end">
+						    <li th:if="${current < 1}" class="page-item disabled">
+						      <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+						    </li>
+						    <li th:if="${current >= 1}" class="page-item">
+						      <a class="page-link" href="#" th:href="@{/bitacora/lista/}+${skip}+@{/}+${current-skip}+@{/?buscar=}+${buscar}" tabindex="1">Anterior</a>
+						    </li> 
+						    
+			       
+						    <li th:each="pagina : ${paginas}" class="page-item">
+						    	<a th:if="${pagina != -1}" class="page-link" href="#" th:href="@{/bitacora/lista/}+${skip}+@{/}+${pagina*skip}+@{/?buscar=}+${buscar}" th:text="${pagina+1}"></a>
+						    </li>
+					    	
+						    <li th:if="${current>= last}" class="page-item disabled">
+						      <a class="page-link" href="#" aria-disabled="true">&Uacute;ltimo</a>
+						    </li>
+						    <li th:if="${last > current}" class="page-item">
+						      <a class="page-link" href="#" th:href="@{/bitacora/lista/}+${skip}+@{/}+${current+skip}+@{/?buscar=}+${buscar}" >Siguiente</a>
+						    </li>
+						    <li th:if="${last > current}" class="page-item">
+						      <a class="page-link" href="#" th:href="@{/bitacora/lista/}+${skip}+@{/}+${last*skip}+@{/?buscar=}+${buscar}" >&Uacute;ltimo</a>
+						    </li>
+						    
+						  </ul>
+						</nav>
+						<a href="#" th:href="@{/index}" class="btn btn-accion">Inicio <i class="fa fa-home" aria-hidden="true"></i></a>
+					</div>
+
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+
+	
+	</contenido>
+	
+	<nuevosScripts>
+		<script>
+			function buscar(){
+				let valor = document.getElementById('cantidad');
+				let buscar = document.getElementById('buscar');
+				location.href = "/bitacora/lista/"+valor.value+"/0/?buscar="+buscar.value;
+			}
+			function limpiar() {
+			    document.getElementById("buscar").value = "";
+			}
+		</script>
+	</nuevosScripts>
+	
+</body>
+</html>

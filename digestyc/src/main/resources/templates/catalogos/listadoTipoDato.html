@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Gesti&oacute;n de Tipificaciones -> Gesti&oacute;n de tipos de datos </b>
+				</h5>
+				<hr/>
+				<h4>Listado de Tipos de Datos Generales</h4>
+			</div>
+		</div>
+	</div>	
+
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<p th:if="${success == 'delete'}"
+						class="alert alert-bien text-center">Eliminaci&oacute;n
+						exitosa</p>
+					<p th:if="${success == 'edit'}"
+						class="alert alert-bien text-center">Actualizaci&oacute;n
+						exitosa</p>
+					<p th:if="${success == 'insert'}"
+						class="alert alert-bien text-center">Registro creado
+						exitosamente</p>
+					<p th:if="${error == 'insert'}"
+						class="alert alert-mal text-center">
+						Registro No creado, por algunas de las siguientes razones: <br>
+						- El Nombre debe tener m&aacute;ximo 60 car&aacute;cteres<br>
+						- El Formato debe tener m&aacute;ximo 30 car&aacute;cteres<br>
+					</p>
+					<p th:if="${error == 'edit'}"
+						class="alert alert-mal text-center">
+						Registro No Actualizado, por algunas de las siguientes razones: <br>
+						- El Nombre debe tener m&aacute;ximo 60 car&aacute;cteres<br>
+						- El Formato debe tener m&aacute;ximo 30 car&aacute;cteres<br>
+					</p>
+					<p th:if="${error == 'delete'}"
+						class="alert alert-mal text-center">No se puede eliminar,
+						es posible que este asociado</p>
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<div class="table-responsive" style="overflow-x: scroll;">
+						<table class="table table-striped table-bordered table-hover"
+							id="agregarDatatable">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th style="text-align: center;">Tipo de dato</th>
+									<th style="text-align: center;">Acciones</th>
+
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="odd gradeX"
+									th:each="tipoDato, iterator: ${tipoDatos}">
+									<td th:text="${iterator.index + 1}"></td>
+									<td th:text="${tipoDato.tipoDatoSqlServer}"
+										style="text-align: center;"></td>
+									<td style="text-align: center;"><a
+										th:if="${tipoDato.hasVariacion == True}" type="button"
+										href="#" class="btn btn-accion btn-sm"
+										th:attr="onclick=|crearModal(${tipoDato.id}, '${tipoDato.tipoDatoSqlServer}')|">
+											Agregar variaci&oacute;n <i class="fa fa-plus"></i> 
+									</a> <a
+										th:if="${tipoDato.hasVariacion == True && tipoDato.variacionesTipoDato.size()>1}"
+										type="button" href="#" class="btn btn-accion btn-sm"
+										th:href="@{/tipoDato/variaciones/{id}(id=${tipoDato.id})}">
+											Ver variaciones <i class="fa fa-eye" aria-hidden="true"></i> 
+									</a>
+										<p th:if="${tipoDato.hasVariacion == False }">No hay
+											variaci&oacute;n para este tipo</p></td>
+
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<a href="#" th:href="@{/index}" class="btn btn-accion" type="button">
+						Inicio <i class="fa fa-home" aria-hidden="true"></i> 
+					</a>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+
+	<!-- MODAL PARA AGREGAR TIPO DATO -->
+	<div class="modal fade" id="addVariacionVarcharModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel">
+					<div class="panel-heading" style="text-align: center;">
+						<b style="color: #6A83BE;">VARIACI&Oacute;N VARCHAR</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<form action="#" th:action="@{/tipoDato/addVariacionTipo}"
+							th:object="${varTipoDato}" method="POST" class="was-validated">
+							<input type="hidden" th:field="*{id}" /> <input
+								id="id_tipo_dato_1" type="hidden" name="id_tipo_dato_1">
+							<div class="panel-heading" style="text-align: center;">
+								<small style="color: #696969">Los campos marcados con <b
+									style="color: red; font-size: medium">&ast;</b> son
+									obligatorios
+								</small>
+							</div>
+							<div class="modal-body">
+								<div class="form-group">
+									<label style="color: #697185;" for="longitudCaracteres">LONGITUD CARACTERES *</label> <br /> 
+								   <input type="number" min="0" th:field="*{longitudCadena}" class="form-control" name="longitudCadena"	th:value="${longitudCadena}" placeholder="Longitud de caracteres *" required>
+								 </div>
+								<div class="form-group">
+									<!--  <label for="longitudCaracteres">COMENTARIO <b style="color: red; font-size: medium">&ast;</b></label> <br />-->
+									<textarea style="resize: none;" rows="4" class="form-control"
+										name="descripcion" th:field="*{descripcion}" maxlength="255"
+										th:value="${descripcion}" placeholder="Comentario *" required></textarea>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-normal" type="submit">
+									Guardar <i class="fa fa-floppy-o" aria-hidden="true"></i> 
+								</button>
+								<a href="#" th:href="@{/tipoDato/listar}"
+									class="btn btn-secun" type="button">Cancelar <i
+									class="fa fa-times-circle" aria-hidden="true"></i> 
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="addVariacionFechaModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel">
+					<div class="panel-heading" style="text-align: center;">
+						<b style="color: #6A83BE;">VARIACI&Oacute;N FORMATO FECHA</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<form action="#" th:action="@{/tipoDato/addVariacionTipoFecha}"
+							th:object="${varTipoDato}" method="POST" class="was-validated">
+							<input type="hidden" th:field="*{id}" /> <input
+								id="id_tipo_dato_2" type="hidden" name="id_tipo_dato_2">
+							<div class="panel-heading" style="text-align: center;">
+								<small style="color: #696969">Los campos marcados con <b
+									style="color: red; font-size: medium">&ast;</b> son
+									obligatorios
+								</small>
+							</div>
+							<div class="modal-body">
+								<div class="form-group">
+									<!--  <label for="longitudCaracteres">FORMATO FECHA<b	style="color: red; font-size: medium">&ast;</b></label> <br />-->
+									<select
+										th:field="*{formatoFecha}" class="formato form-control"
+										required>
+										<!--  onchange="validar()" -->
+										<!-- Esto debe ser leido  -->
+										<option value="" selected="selected" disabled="disabled">Formato fecha *</option>
+										<option value="dd-MM-yyyy" label="dd-MM-yyyy">
+										<option value="MM-dd-yyyy" label="MM-dd-yyyy">
+										<option value="yyyy-MM-dd" label="yyyy-MM-dd">
+										<option value="yyyy-dd-MM" label="yyyy-dd-MM">
+										<option value="dd/MM/yyyy" label="dd/MM/yyyy">
+										<option value="MM/dd/yyyy" label="MM/dd/yyyy">
+										<option value="yyyy/MM/dd" label="yyyy/MM/dd">
+										<option value="yyyy/dd/MM" label="yyyy/dd/MM">
+									</select>
+								</div>
+								<div class="form-group">
+									<!-- <label for="longitudCaracteres">COMENTARIO <b style="color: red; font-size: medium">&ast;</b></label> <br /> -->
+									<textarea style="resize: none;" rows="4" class="form-control"
+										name="descripcion" th:field="*{descripcion}" maxlength="255"
+										th:value="${descripcion}" placeholder="Comentario *" required></textarea>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-normal" type="submit">
+									Guardar <i class="fa fa-floppy-o" aria-hidden="true"></i> 
+								</button>
+								<a href="#" th:href="@{/tipoDato/listar}"
+									class="btn btn-secun" type="button">Cancelar <i
+									class="fa fa-times-circle" aria-hidden="true"></i> 
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="addVariacionTipoDecimal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel">
+					<div class="panel-heading" style="text-align: center;">
+						<b style="color: #6A83BE;">VARIACI&Oacute;N NUMERO DE DECIMALES</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<form action="#" th:action="@{/tipoDato/addVariacionDecimales}"
+							th:object="${varTipoDato}" method="POST" class="was-validated">
+							<input type="hidden" th:field="*{id}" /> <input
+								id="id_tipo_dato_3" type="hidden" name="id_tipo_dato_3">
+							<div class="panel-heading" style="text-align: center;">
+								<small style="color: #696969">Los campos marcados con <b
+									style="color: red; font-size: medium">&ast;</b> son
+									obligatorios
+								</small>
+							</div>
+							<div class="modal-body">
+								<div class="form-group">
+									<label style="color: #697185;" for="decimales">N&Uacute;MERO DE DECIMALES *</label> <br />
+									<input type="number" class="form-control"
+										name="decimales" th:field="*{decimales}"
+										th:value="${decimales}" min="0" placeholder="N&uacute;mero de decimales *" required>
+								</div>
+								<div class="form-group">
+									<!--  <label for="longitudCaracteres">COMENTARIO <b style="color: red; font-size: medium">&ast;</b></label> <br />-->
+									<textarea style="resize: none;" rows="4" class="form-control"
+										name="descripcion" th:field="*{descripcion}" maxlength="255"
+										th:value="${descripcion}" placeholder="Comentario *" required></textarea>
+								</div>
+							</div>
+
+							<div class="modal-footer">
+								<button class="btn btn-normal" type="submit">
+									Guardar <i class="fa fa-floppy-o" aria-hidden="true"></i> 
+								</button>
+								<a href="#" th:href="@{/tipoDato/listar}"
+									class="btn btn-secun" type="button">Cancelar <i
+									class="fa fa-times-circle" aria-hidden="true"></i> 
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	</contenido>
+
+	<nuevosScripts> <script>
+		function crearModal(id, nombre) {
+			if (nombre.localeCompare('varchar') == 0) {
+				//Abrir el modal de varchar
+				//alert('Estoy en varchar');
+				$('#addVariacionVarcharModal').modal();
+				document.getElementById('id_tipo_dato_1').value = id;
+
+			} else if (nombre.localeCompare('date') == 0) {
+				//Abrir modal de fecha
+				$('#addVariacionFechaModal').modal();
+				document.getElementById('id_tipo_dato_2').value = id;
+
+			} else if (nombre.localeCompare('Decimal') == 0) {
+				//abrir el modal de decimales
+				$('#addVariacionTipoDecimal').modal();
+				document.getElementById('id_tipo_dato_3').value = id;
+			}
+
+		}
+	</script> <script>
+		window.onload = function() {
+			//alert("Javascript especifico");
+		};
+	</script> </nuevosScripts>
+
+</body>
+</html>

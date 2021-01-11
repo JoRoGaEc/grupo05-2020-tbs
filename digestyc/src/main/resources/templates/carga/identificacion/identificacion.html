@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Cargar datos -> Registros -> Gesti&oacute;n de RA/OE ->
+						Identificaci&oacute;n de columnas</b>
+				</h5>
+				<hr />
+				<h4
+					th:text="@{Identificaci&oacute;n de Columnas del Registro:}+ ' ' + ${registro.nombre.toUpperCase()}"></h4>
+				<h5 th:text="@{C&oacute;digo:}+ ' ' + ${registro.codigo}"></h5>
+				<h5 th:text="@{Instituci&oacute;n:}+ ' ' + ${registro.institucion.nombre}"></h5>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-12" style="color: #697185;">
+	NOTA:<b style="color: green; font-size: medium">&ast;</b> <small><p
+			style="text-align: justify">
+			<label>Usted est&aacute; observando la plantilla habilitada
+				para el registro</label>
+		</p></small></div><br>
+	<div class="row">
+		<div class="col-lg-12">
+			<div style="float: right">
+				<!-- <a class="btn btn-primary" href="#" data-toggle="modal"
+					data-target="#agregarColumnaModal"> <i class="fa fa-plus"
+					aria-hidden="true"></i> Nueva columna </a> 
+				<a class="btn btn-primary" href="#" data-toggle="modal"
+					data-target="#agregarPlantillaModal"> <i class="fa fa-upload"
+					aria-hidden="true"></i> Importar</a> -->
+				<a th:if="${tipoRegistro.id == 1}" href="#"
+						th:href="@{/plantillas/ra/}+${registro.institucion.id}+@{/}"
+						class="btn btn-accion">Gesti&oacute;n de plantillas <i class="fa fa-files-o"
+						aria-hidden="true"></i> 
+				</a> <a href="#" th:if="${tipoRegistro.id == 2}"
+						th:href="@{/plantillas/oe/}+${registro.institucion.id}+@{/}"
+						class="btn btn-accion">Gesti&oacute;n de plantillas <i class="fa fa-files-o"
+						aria-hidden="true"></i> 
+				</a>
+				<a class="btn btn-accion" href="#"
+					th:href="@{/tipificacion/desdeTipificaciones/}+${registro.institucion.id}+@{/}">
+					Tipificaciones <i class="fa fa-plus-circle"></i> 
+				</a>
+				<a class="btn btn-accion" href="#"
+					th:href="@{/identificacion/importeMasivo/}+${registro.id}+@{/}">
+					Descargar <i class="fa fa-download" aria-hidden="true"></i> 
+				</a>
+				
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<p th:if="${success == 'edit'}"
+						class="alert alert-bien text-center">Asignaci&oacute;n de tipificaci&oacute;n
+						exitosa</p>
+					<p th:if="${error == 'edit'}"
+						class="alert alert-mal text-center">El registro ya no se puede editar</p>
+						
+					<p th:if="${success == 'delete'}"
+						class="alert alert-bien text-center">Eliminaci&oacute;n
+						exitosa</p>
+					<p th:if="${success == 'insert'}"
+						class="alert alert-bien text-center">Registro creado
+						exitosamente</p>
+					<p th:if="${error == 'delete'}"
+						class="alert alert-mal text-center">No se puede eliminar,
+						es posible que este asociado</p>
+					<p th:if="${error == 'DATO'}"
+						class="alert alert-mal text-center">Debe seleccionar un
+						tipo de dato</p>
+					<p th:if="${error == 'insert'}"
+						class="alert alert-mal text-center">Error al ingresar nueva
+						columna el nombre no debe estar vac&iacute;o</p>
+					<p th:if="${error == 'plantilla'}"
+						class="alert alert-mal text-center">Error al ingresar nueva
+						columna, la plantilla esta vac&iacute;a, contacte al administrador</p>
+					<p th:if="${error == 'versionHas'}"
+						class="alert alert-mal text-center">
+						No puede agregar y/o eliminar columnas, ya que se han realizado <label
+							th:text="${numEnt}"></label> entregas bajo esta versi&oacute;n de
+						plantilla.
+					</p>
+					<p th:if="${unico == 'insert'}"
+						class="alert alert-mal text-center">Registro No creado, Ya
+						Existe una columna con ese Nombre</p>
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<form action="#" th:action="@{/identificacion/guardar}"
+						method="POST" class="was-validated">
+						<input type="hidden" name="${_csrf.parameterName}"
+							value="${_csrf.token}" /> <input type="number" id="id" name="id"
+							th:value="${registro.id}" hidden="" readonly="readonly"
+							required="required"> <input type="number"
+							id="id_institucion" name="id_institucion"
+							th:value="${registro.institucion.id}" hidden=""
+							readonly="readonly" required="required">
+
+						<div class="table-responsive" style="overflow-x: scroll;">
+							<table class="table table-striped table-bordered table-hover"
+								id="agregarDatatable">
+								<thead>
+									<tr>
+										<!-- <th style="text-align: center;">ID</th> -->
+										<th style="text-align: center;">Columna</th>
+										<th style="text-align: center;">Tipificaci&oacute;n</th>
+										<th style="text-align: center;">Tipo de dato</th>
+										<th style="text-align: center;">Longitud</th>
+										<th style="text-align: center;">Acepta nulo</th>
+										<th style="text-align: center;">Posibles valores</th>
+										<!--<th style="text-align: center;">Acciones</th> -->
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="odd gradeX" th:each="columna : ${columnas}">
+										<!--  <td th:text="${columna.id}"></td> -->
+										<td th:if="${columna.plantillaColumna!=null}" th:text="${columna.plantillaColumna.nombre}"></td>
+										<td th:if="${columna.plantillaColumna==null}" th:text="@{no hay columnas asociadas}"></td>
+										<td
+											th:if="${columna.tipificacion != null && columna.plantillaColumna!=null && editar==false}">Ya
+											no puedes editarlo</td>
+										<td
+											th:if="${columna.tipificacion == null || editar}">
+											<select class="tipificaciones form-control"
+											th:id="@{select_}+${columna.id}"
+											th:name="@{select_}+${columna.id}"
+											th:attr="onchange=|agregarTipificacion(${columna.id})|">
+												<option th:if="${columna.tipificacion == null}" value=""
+													selected="selected">Tipificaci&oacute;n</option>
+												<option th:if="${columna.tipificacion != null}"
+													th:value="${columna.tipificacion.id}"
+													th:text="${columna.tipificacion.nombre}"
+													selected="selected" >Tipificaci&oacute;n</option>
+												<option th:each="tipificacion: ${tipificaciones}"
+													th:value="${tipificacion.id}"
+													th:text="${tipificacion.nombre}"></option>
+										</select> <input th:id="@{tipificacion_}+${columna.id}"
+											name="tipificacion" type="text" hidden="">
+										</td>
+										<td><label th:id="@{tipoDato}+${columna.id}">
+												<p
+													th:if="${columna.tipificacion != null and columna.tipificacion.variacionTipoDato != null and columna.tipificacion.variacionTipoDato.tipoDato != null}"
+													th:text="${columna.tipificacion.variacionTipoDato.tipoDato.tipoDatoSqlServer}"></p>
+										</label></td>
+										<td><label th:id="@{longitud}+${columna.id}">
+												<p
+													th:if="${columna.tipificacion != null and columna.tipificacion.variacionTipoDato != null and columna.tipificacion.variacionTipoDato.longitudCadena > 0}"
+													th:text="${columna.tipificacion.variacionTipoDato.longitudCadena}"></p>
+												<p
+													th:if="${columna.tipificacion != null and columna.tipificacion.variacionTipoDato != null and columna.tipificacion.variacionTipoDato.decimales >0 }"
+													th:text="${columna.tipificacion.variacionTipoDato.decimales}"></p>
+										</label></td>
+										<td><label th:id="@{esNulo}+${columna.id}">
+												<p th:if="${columna.tipificacion != null}">
+													<i th:if="${columna.tipificacion.esNulo}"
+														class="fa fa-check"></i>
+												</p>
+										</label></td>
+										<td>
+											<div th:if="${columna.tipificacion != null}">
+												<div th:if="${columna.tipificacion.valorTipico != null}"
+													th:each="valor : ${columna.tipificacion.valorTipico}">
+													<label th:if="${valor.existeRango == 1}"
+														th:text="@{inicio:}+' '+${valor.inicioRango}+' '+@{Fin: }+' '+${valor.finRango}"></label>
+													<label th:if="${valor.existeRango == 3}"
+														th:text="@{inicio: }+' '+${valor.fechaInicio}+@{Fin: }+' '+${valor.fechaFin}"></label>
+													<label th:if="${valor.existeRango == 2}"
+														th:text="${valor.valor}"></label>
+												</div>
+											</div>
+										</td>
+
+										<!-- <td style="text-align: center;"><a href="#"
+											class="btn btn-danger btn-sm"
+											th:attr="onclick=|crearModalEliminar(${columna.id}, '${columna.plantillaColumna.nombre}')|">
+												<i class="fa fa-trash-o" aria-hidden="true"></i> Eliminar
+										</a></td> -->
+									</tr>
+								</tbody>
+							</table>
+							<button type="submit" class="btn btn-normal">
+								Guardar <i class="fa fa-save"></i> 
+							</button>
+							<a href="#" th:href="@{/registro/listar}" class="btn btn-secun"
+								type="button">Cancelar <i class="fa fa-times-circle"
+								aria-hidden="true"></i> 
+							</a>
+						</div>
+					</form>
+					<br> <a href="#"
+						th:href="@{/registro/listar}" class="btn btn-secun"><i
+						class="fa fa-backward" aria-hidden="true"></i> Regresar</a>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+
+	<!-- PARA IDENTIFICACIÓN NO SE USARÁ
+	
+	 --------MODAL PARA AGREGAR COLUMNA ----
+	<div class="modal fade" id="agregarColumnaModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel-primary">
+					<div class="panel-heading" style="text-align: center;">
+						<b>NUEVA COLUMNA</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<form action="#" th:action="@{/identificacion/nuevo}"
+							th:object="${nuevaVersionColumna}" method="POST"
+							class="was-validated">
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" /> <input type="number" id="registro"
+								name="registro" th:value="${registro.id}" hidden=""
+								readonly="readonly" required="required">
+							<div class="panel-heading" style="text-align: center;">
+								<small style="color: #696969">Los campos marcados con <b
+									style="color: red; font-size: medium">&ast;</b> son
+									obligatorios
+								</small>
+							</div>
+							<div class="modal-body">
+								<div class="form-group">
+									<label for="nombre">NOMBRE COLUMNA NUEVA <b
+										style="color: red; font-size: medium">&ast;</b></label> <input
+										type="text" class="form-control"
+										placeholder="Nombre de columna nueva" required
+										id="nombre_columna" name="nombre_columna" /> <input
+										type="hidden" class="form-control" id="errorNombre"
+										th:value="${error}" />
+									<p th:if="${error == 'insert'}" class="text-danger">El
+										campo nombre no puede estar vac&iacute;o</p>
+								</div>
+								<div class="form-group">
+									<label class="control-label" for="tipificacion">TIPO DE
+										DATO <b style="color: red; font-size: medium">&ast;</b>
+									</label> <select style="width: 525px"
+										class="form-control tipificaciones"
+										th:field="*{tipificacion.id}" required>
+										<option value="" selected="selected">Seleccione una
+											opci&oacute;n</option>
+										<option th:each="tipificacion: ${tipificaciones}"
+											th:value="${tipificacion.id}"
+											th:text="${tipificacion.nombre}"></option>
+									</select>
+									<p th:if="${error == 'tipificacion'}" class="text-danger">Debe
+										seleccionar un tipo de dato(Tipificaci&oacute;n)</p>
+								</div>
+
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-primary" type="submit">
+									<i class="fa fa-floppy-o" aria-hidden="true"></i> Guardar
+								</button>
+								<a href="#" data-dismiss="modal" class="btn btn-warning"
+									type="button"> <i class="fa fa-times-circle"
+									aria-hidden="true"></i> Cancelar
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div> 
+	--------MODAL PARA IMPORTAR PLANTILLA---- 
+	<div class="modal fade" id="agregarPlantillaModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel-primary">
+					<div class="panel-heading" style="text-align: center;">
+						<b>IMPORTAR PLANTILLA DE IDENTIFICACI&Oacute;N</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<div class="panel-heading" style="text-align: center;">
+							<small style="color: #696969">Los campos marcados con <b
+								style="color: red; font-size: medium">&ast;</b> son obligatorios
+							</small>
+						</div>
+						<form action="#" th:action="@{/identificacion/importar}"
+							method="POST" class="was-validated" enctype="multipart/form-data">
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" /> <input type="number" id="registro"
+								name="registro" th:value="${registro.id}" hidden=""
+								readonly="readonly" required="required"> <input
+								type="number" th:if="${registro.plantilla != null}"
+								id="plantilla" name="plantilla"
+								th:value="${registro.plantilla.id}" hidden=""
+								readonly="readonly" required="required"> <input
+								type="number" th:if="${registro.plantilla == null}"
+								id="plantilla" name="plantilla" value="0" hidden=""
+								readonly="readonly">
+
+							<div class="modal-body">
+								<div class="form-group">
+									<label for="nombre">ARCHIVO</label> <b
+										style="color: red; font-size: medium">&ast;</b> <input
+										type="file" class="form-control" id="archivo" name="archivo"
+										required
+										accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+									<p th:if="${error == 'archivo'}" class="text-danger">El
+										campo nombre no puede estar vac&iacute;o</p>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-primary" type="submit">
+									<i class="fa fa-floppy-o" aria-hidden="true"></i> Guardar
+								</button>
+								<a href="#" data-dismiss="modal" class="btn btn-warning"
+									type="button"> <i class="fa fa-times-circle"
+									aria-hidden="true"></i> Cancelar
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+     --------MODAL PARA ELIMINAR PLANTILLA---- 
+	<div class="modal fade" id="eliminarTipificaionModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel-danger">
+					<div class="panel-heading" style="text-align: center;">
+						<b>ELIMINAR COLUMNA</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<form action="#" th:action="@{/identificacion/remover}"
+							method="POST" class="was-validated">
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" /> <input type="number" id="id"
+								name="id" th:value="${registro.id}" hidden=""
+								readonly="readonly" required="required"> <input
+								type="number" value="" id="id_eliminar" name="id_eliminar"
+								hidden="" readonly="readonly" />
+							<div class="modal-body">
+								<label>&iquest;Desea Eliminar&quest;</label>
+								<hr>
+								<div class="form-group">
+									<label for="nombre">NOMBRE DE LA COLUMNA</label> <input
+										type="text" class="form-control" name="eliminar_nombre"
+										id="eliminar_nombre" value="" required readonly="readonly">
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-danger" type="submit">
+									<i class="fa fa-trash-o" aria-hidden="true"></i> Eliminar
+								</button>
+								<a href="#" data-dismiss="modal" class="btn btn-warning"
+									type="button"> <i class="fa fa-times-circle"
+									aria-hidden="true"></i> Cancelar
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<footer class="footer bg-dark rounded-top text-center">
+			<div class="container py-2">
+				<p class="text-white my-2"></p>
+			</div>
+		</footer>
+	</div>-->
+	</contenido>
+
+	<nuevosScripts> <script>
+		$(document).ready(
+				function() {
+					$('.tipificaciones').select2({
+						theme: "classic"
+						});
+					var errorNombre = document.getElementById('errorNombre');
+					if (errorNombre.value == 'insert'
+							|| errorNombre.value == 'tipificacion') {
+						$('#agregarColumnaModal').modal();
+					}
+				});
+		function crearModalEliminar(id, nombre) {
+			document.getElementById('id_eliminar').value = id;
+			document.getElementById('eliminar_nombre').value = nombre;
+			$('#eliminarTipificaionModal').modal();
+			console.log(nombre);
+		}
+
+		function agregarTipificacion(columnaId) {
+			let selectId = "select_" + columnaId;
+			let tipificacionId = "tipificacion_" + columnaId;
+			let valor = document.getElementById(selectId);
+			document.getElementById(tipificacionId).value = columnaId + ","
+					+ valor.value;
+			console.log(valor.value);
+		}
+	</script> </nuevosScripts>
+
+</body>
+</html>

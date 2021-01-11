@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Gesti&oacute;n de Tipificaciones -> Tipificaciones-> Nueva tipificaci&oacute;n</b>
+				</h5>
+				<hr/>
+				<h4>Nueva Tipificaci&oacute;n</h4>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-11">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<p th:if="${success == 'delete'}"
+						class="alert alert-bien text-center">Eliminaci&oacute;n
+						exitosa</p>
+					<p th:if="${success == 'edit'}"
+						class="alert alert-bien text-center">Actualizaci&oacute;n
+						exitosa</p>
+					<p th:if="${success == 'insert'}"
+						class="alert alert-bien text-center">Registro creado
+						exitosamente</p>
+					<p th:if="${error == 'Excepcion'}"
+						class="alert alert-mal text-center">Ocurri&oacute; una
+						excepci&oacute;n, comun&iacute;quese con el administrador</p>
+					<p th:if="${error == 'insert'}" class="alert alert-mal ">
+						No se puede ingresar el registro por los siguientes motivos: <br>
+						- El nombre de la tipificaci&oacute;n debe tener entre 2 y 100
+						car&aacute;cteres<br> - La descripci&oacute;n debe tener
+						entre 5 y 500 car&aacute;cteres <br> - Debe seleccionar un
+						tipo de dato (Variaci&oacute;n de tipo de dato)
+					</p>
+				</div>
+				<div class="panel-body">
+					<div class="panel-heading" style="text-align: left;">
+						<small style="color: #696969">Los campos marcados con <b
+							style="color: red; font-size: medium">&ast;</b> son obligatorios
+						</small>
+					</div>
+					<div class="row">
+						<div class="col-lg-11">
+							<form role="form" action="#" th:action="@{/tipificacion/agregar}"
+								method="POST" th:objects="*{tipificacion}">
+								<input type="hidden" name="${_csrf.parameterName}"
+									value="${_csrf.token}" />
+
+								<div class="form-group">
+									<div class="col-lg-4">
+										<div class="form-group">
+											<!--  <label class="control-label" for="nombre">NOMBRE <b	style="color: red; font-size: medium">&ast;</b></label>--> 
+											<input type="text" class="form-control" id="nombre"
+												name="nombre" placeholder="Nombre *" th:fields="*{nombre}"
+												th:value="${tipificacion.nombre}" required>
+											<p th:if="${#fields.hasErrors('tipificacion.nombre')}"
+												th:errors="*{tipificacion.nombre}" class="text-danger"></p>
+										</div>
+									</div>
+									<div class="col-lg-4">
+										<div class="form-group">
+											<!--  <label class="control-label" for="tipoDato">TIPO DE	DATOS <b style="color: red; font-size: medium">&ast;</b></label>-->
+											<p th:if="${error == 'DATO'}" class="text-danger">Error, el tipo de dato no debe estar vac&iacute;o</p>
+											<select class="tipodatos form-control" name="dato_id"
+												id="dato_id" onchange="validar()" required>
+												<option value="" selected="selected" disabled="disabled">Tipo de dato *</option>
+												<option th:each="tipo: ${tiposDatos}" th:value="${tipo.id}"
+													th:text="${tipo.tipoDatoSqlServer}"></option>
+											</select>
+										</div>
+									</div>
+									<div class="col-lg-4">
+										<div class="form-group">
+											<!--  <label class="control-label" for="tipoDato">VARIACI&Oacute;N DEL TIPO <b style="color: red; font-size: medium">&ast;</b></label>-->
+											<p th:if="${error == 'DATO'}" class="text-danger">Error, el tipo de dato no debe estar vac&iacute;o</p>
+											<select class="tipodatos form-control" name="dato_var_id"
+												id="dato_var_id" required>
+												<option value="" selected="selected" disabled="disabled">Variaci&oacute;n del tipo *</option>
+												<option></option>
+											</select>
+										</div>
+									</div>
+									<div class="col-lg-12"></div>
+								</div>
+
+								<div class="form-group">
+									<div class="col-lg-8">
+										<!--  <label class="control-label" for="descripcion">DESCRIPCI&Oacute;N <b style="color: red; font-size: medium">&ast;</b></label>-->
+										<textarea style="resize: none;" rows="4" class="form-control"
+											id="descripcion" name="descripcion"
+											placeholder="Descripci&oacute;n *" th:fields="*{descripcion}" 
+											th:text="${tipificacion.descripcion}" required></textarea>
+										<p th:if="${#fields.hasErrors('tipificacion.descripcion')}"
+											th:errors="*{tipificacion.descripcion}" class="text-danger"></p>
+									</div>
+									<div class="col-lg-4">
+										<label style="color: #697185;" class="control-label" for="descripcion">&iquest;VALOR
+											NULO?</label> <input type="checkbox" class="form-control" id="esNulo"
+											name="esNulo" placeholder="esNulo" th:fields="*{esNulo}"
+											th:checked="${tipificacion.esNulo}">
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-lg-11">
+										<p class="control-label"></p>
+										<!--  <label class="control-label" for="rango">DOMINIO DE VALORES</label>--> 
+										<select class="dominio form-control" name="rango" id="rango"
+											onchange="setDominio()">
+											<option value="0" selected="selected" disabled="disabled">Dominio de valores</option>
+											<option value="1">Rango de n&uacute;meros</option>
+											<option value="2">Valores especif&iacute;cos</option>
+											<option value="3">Fechas</option>
+										</select>
+									</div>
+									<p class="control-label">
+										<label th:if="${error == 'RANGONUMERO'}"
+											class="text-danger text-center">El n&uacute;mero
+											inicial debe ser menor al n&uacute;mero final</label>
+									</p>
+									<p class="control-label">
+										<label th:if="${error == 'VALORES'}"
+											class="text-danger text-center">Este campo no puede
+											estar vac&iacute;o y debe estar separados por comas y los datos deben ser menor a la longitud establecida</label>
+									</p>
+									<p class="control-label">
+										<label th:if="${error == 'RANGOFECHA'}"
+											class="text-danger text-center">La fecha inicial debe
+											ser menor a la fecha final, no puede insertar ese rango de
+											fechas</label>
+									</p>
+									<p class="control-label">
+										<label id="validacion_front"></label>
+									</p>
+								</div>
+								
+								<div class="form-group" id="rango_numeros" style="display: none">
+									<div class="col-lg-8">
+										<div class="form-group">
+											<label style="color: #697185;" class="control-label" for="rango_numero">RANGO DE N&Uacute;MEROS</label>
+											<div class="form-inline">
+												<!--  <label style="color: #697185;"class="control-label col-lg-3" for="inicio_numero">INICIO: </label>--> 
+												<input type="number" class="form-control"
+													id="inicio_numero" name="inicio_numero"
+													placeholder="Inicio">
+											</div>
+											<br>
+											<div class="form-inline">
+												<!--  <label style="color: #697185;" class="control-label col-lg-3" for="fin_numero">FIN:</label>--> 
+												<input type="number" class="form-control" id="fin_numero"
+													name="fin_numero" placeholder="Fin">
+											</div>
+										</div>
+									</div>
+								</div>
+
+
+								<div class="form-group" id="valores_especificos" style="display: none">
+								 <div class="col-lg-11">
+										<label  style="color: #697185;" class="control-label" for="nombre">VALORES ESPEC&Iacute;FICOS (SEPARADOR POR ',')</label> 
+										<input type="text" class="form-control" id="valores" name="valores"	placeholder="Valores espec&iacute;ficos (separar por ',')">
+									</div>
+								</div>
+
+								<div class="form-group" id="rango_fecha" style="display: none">
+									<div class="col-lg-8">
+										<label style="color: #697185;" class="control-label" for="rango_fecha">RANGO DE FECHAS</label>
+										<div class="form-inline">
+											<!--  <label style="color: #697185;" class="control-label col-lg-3" for="inicio_fecha">INICIO:</label>-->
+										<input  placeholder="Inicio " class="form-control" onfocus="(this.type='date')" id="inicio_fecha" name="inicio_fecha" />
+										</div>
+										<br>
+										<div class="form-inline">
+											<!--  <label style="color: #697185;" class="control-label col-lg-3" for="fin_fecha">FIN:</label>-->
+											<input  placeholder="Fin " class="form-control" onfocus="(this.type='date')" id="fin_fecha" name="fin_fecha" />
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-lg-8">
+										<div class="form-inline">
+											<br>
+											<button class="btn btn-normal" type="submit">
+												Guardar <i class="fa fa-floppy-o" aria-hidden="true"></i> 
+											</button>
+											<a href="#" th:href="@{/tipificacion/listar}"
+												class="btn btn-secun" type="button">Cancelar <i
+												class="fa fa-times-circle" aria-hidden="true"></i> 
+											</a>
+											<!--  <button type="submit" class="btn btn-primary btn-lg">
+												<i class="fa fa-plus" aria-hidden="true"></i> Agregar
+												tipificacion
+											</button>
+											<a href="#" th:href="@{/tipificacion/listar}"
+												class="btn btn-info btn-lg"> <i class="fa fa-backward"
+												aria-hidden="true"></i> Regresar
+											</a>-->
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	</contenido>
+
+	<nuevosScripts> <script>
+		$(document).ready(function() {
+			$('.tipodatos').select2({
+				theme: "classic"
+				});
+			$('.dominio').select2({
+				theme: "classic"
+				});
+			cerrarTodo();
+		});
+
+		function setDominio() {
+			var valor = document.getElementById('rango');
+			cerrarTodo();
+			var texto = $('#dato_id').find('option:selected').text().trim()
+					.toUpperCase();
+			var numeros = "INTEGER, DOUBLE, FLOAT, DECIMAL";
+			var fechas = "DATE, DATETIME";
+			var strings = "VARCHAR, STRING, NVARCHAR";
+			if (valor.value == 1) {
+				if (numeros.includes(texto)) {
+					document.getElementById('rango_numeros').style.display = 'block';
+					document.getElementById('validacion_front').innerHTML = "";
+				} else {
+					document.getElementById('validacion_front').innerHTML = "NO PUEDES AGREGAR RANGO DE N&Uacute;MEROS SI NO SELECCIONAS EL TIPO DE DATO ADECUADO, PUEDEN SER: "
+							+ numeros;
+				}
+			}
+			if (valor.value == 2) {
+				if (strings.includes(texto)) {
+					document.getElementById('valores_especificos').style.display = 'block';
+					document.getElementById('validacion_front').innerHTML = "";
+				} else {
+					document.getElementById('validacion_front').innerHTML = "NO PUEDES AGREGAR RANGO DE TEXTOS SI NO SELECCIONAS EL TIPO DE DATO ADECUADO, PUEDEN SER: "
+							+ strings;
+				}
+			}
+			if (valor.value == 3) {
+				if (fechas.includes(texto)) {
+					document.getElementById('rango_fecha').style.display = 'block';
+					document.getElementById('validacion_front').innerHTML = "";
+				} else {
+					document.getElementById('validacion_front').innerHTML = "NO PUEDES AGREGAR RANGO DE FECHAS SI NO SELECCIONAS EL TIPO DE DATO ADECUADO, PUEDEN SER: "
+							+ fechas;
+				}
+			}
+		}
+
+		function validar() {
+			document.getElementById("rango").options.item(0).selected = 'selected';
+			document.getElementById('validacion_front').innerHTML = "SI DESEA AGREGAR UN RANGO DE VALORES, SELECCIONE UNA OPCI&Oacute;N V&Aacute;LIDA ACORDE AL TIPO DE DATO SELECCIONADO";
+			cargarEspecificos();
+			cerrarTodo();
+		}
+
+		function cerrarTodo() {
+			document.getElementById('rango_numeros').style.display = 'none';
+			document.getElementById('valores_especificos').style.display = 'none';
+			document.getElementById('rango_fecha').style.display = 'none';
+
+			document.getElementById('inicio_numero').value = '';
+			document.getElementById('fin_numero').value = '';
+			document.getElementById('valores').value = '';
+			document.getElementById('inicio_fecha').value = '';
+			document.getElementById('fin_fecha').value = '';
+
+		}
+
+		function cargarEspecificos() {
+			var parametro = document.getElementById('dato_id').value;
+			//alert('Selecciono ' +  parametro); 
+			$('#dato_var_id').empty();
+			$.ajax({
+				url : "/tipificacion/tiposespecificos/",
+				type : "get", //send it through get method
+				data : {
+					idTipoDato : parametro, // your get parameter(s)
+				},
+				success : function(datos) {
+					$.each(datos, function(i) {
+						var tipoDato = datos[0].tipoDato.tipoDatoJava;
+						//alert('TipoDatoJava ' + tipoDato)
+						if (tipoDato.localeCompare('String') == 0) {
+							$('#dato_var_id').append(
+									$('<option>', {
+										value : datos[i].id,
+										text : 'String - Longitud : '
+												+ datos[i].longitudCadena
+									}));
+						} else if (tipoDato.localeCompare('Date') == 0) {
+							$('#dato_var_id').append(
+									$('<option>', {
+										value : datos[i].id,
+										text : 'Fecha - Formato : '
+												+ datos[i].formatoFecha
+									}));
+
+						} else if (tipoDato.localeCompare('Decimal') == 0) {
+							//alert('SI');
+							$('#dato_var_id').append(
+									$('<option>', {
+										value : datos[i].id,
+										text : 'Decimal - No. Decimales : '
+												+ datos[i].decimales
+									}));
+						} else {
+							//alert('NO');
+							$('#dato_var_id').append($('<option>', {
+								value : datos[i].id,
+								text : datos[i].tipoDato.tipoDatoSqlServer
+							}));
+						}
+						// console.log (datos[i]);
+
+					});
+				},
+				error : function(xhr) {
+					//Do Something to handle error
+				}
+			});
+
+		}
+	</script> </nuevosScripts>
+
+</body>
+</html>

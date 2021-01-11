@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Gesti&oacute;n de Tipificaciones -> Gesti&oacute;n de tipos de datos ->
+						Variaciones del Tipo de Dato</b>
+				</h5>
+				<hr />
+				<h4>Variaciones del Tipo de Dato: "<label th:text="${tipoDato.tipoDatoSqlServer.toUpperCase()}"></label>" </h4>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<p th:if="${success == 'delete'}"
+						class="alert alert-bien text-center">Eliminaci&oacute;n
+						exitosa</p>
+					<p th:if="${error == 'delete'}"
+						class="alert alert-mal text-center">No se puede eliminar.</p>
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<div class="table-responsive" style="overflow-x: scroll;">
+						<table class="table table-striped table-bordered table-hover"
+							id="agregarDatatable">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th style="text-align: center;">Decimales</th>
+									<th style="text-align: center;">Descripci&oacute;n</th>
+									<th style="text-align: center;">Formato fecha</th>
+									<th style="text-align: center;">&iquest; Es Boolean?</th>
+									<th style="text-align: center;">Longitud cadena</th>
+									<th style="text-align: center;">Acciones</th>
+
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="odd gradeX"
+									th:each="variacion, iterator: ${variaciones}">
+									<td th:text="${iterator.index + 1}"></td>
+									<td th:text="${variacion.decimales}"
+										style="text-align: center;"></td>
+									<td th:text="${variacion.descripcion}"
+										style="text-align: center;"></td>
+									<td th:text="${variacion.formatoFecha}"
+										style="text-align: center;"></td>
+									<td th:text="${variacion.isBoolean}"
+										style="text-align: center;"></td>
+									<td th:text="${variacion.longitudCadena}"
+										style="text-align: center;"></td>
+									<td style="text-align: center;"><a href="#"
+										class="btn btn-accion btn-sm"
+										th:attr="onclick=|crearModalEliminar(${variacion.id}, '${tipoDato.tipoDatoSqlServer.toUpperCase()}')|">
+											Eliminar <i class="fa fa-trash-o" aria-hidden="true"></i> 
+									</a></td>
+
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<a href="#" th:href="@{/tipoDato/listar}" class="btn btn-secun"
+						type="button"> <i class="fa fa-backward" aria-hidden="true"></i>
+						Regresar
+					</a>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	<!-- MODAL PARA ELIMINAR VARIACIÓN TIPO DE DATO -->
+	<div class="modal fade" id="eliminarVariacionModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel">
+					<div class="panel-heading" style="text-align: center;">
+						<b style="color: #6A83BE;">ELIMINAR VARIACI&Oacute;N</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<form action="#" th:action="@{/tipoDato/removervariacion}"
+							method="POST" class="was-validated">
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" /> <input type="number" value=""
+								id="id_variacion" name="id_variacion" hidden=""
+								readonly="readonly" />
+							<div class="modal-body">
+								<label style="color: #6A83BE;">&iquest;Desea Eliminar&quest;</label>
+								<hr>
+								<div class="form-group">
+									<label style="color: #697185;" for="nombre">UNA VARIACI&Oacute;N DEL TIPO DE
+										DATO</label> <input type="text" class="form-control"
+										name="eliminar_nombre" id="eliminar_nombre" value="" required
+										readonly="readonly">
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-normal" type="submit">
+									Aceptar <i class="fa fa-check-circle" aria-hidden="true"></i> 
+								</button>
+								<a href="#" data-dismiss="modal" class="btn btn-secun"
+									type="button">Cancelar <i class="fa fa-times-circle"
+									aria-hidden="true"></i> 
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+	</contenido>
+
+	<nuevosScripts> <script>
+		function crearModalEliminar(id, nombre) {
+			document.getElementById('id_variacion').value = id;
+			document.getElementById('eliminar_nombre').value = nombre;
+			$('#eliminarVariacionModal').modal();
+			console.log(nombre);
+		}
+	</script> <script>
+		window.onload = function() {
+			//alert("Javascript especifico");
+		};
+	</script> </nuevosScripts>
+
+</body>
+</html>

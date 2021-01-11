@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div sec:authorize="isAuthenticated()">
+		<div sec:preauthorize="hasUrl('/register')">
+			<img src="../static/imgs/logo_me.jpg" th:src="@{/imgs/logo_me.jpg}"
+				style="width: 220px; height: 185px; float: right;"> <br>
+			<br> <br>
+			<div class="panel-heading">
+				<h1 style="text-align: center;color: #3C4557;">&iexcl;BIENVENIDO!</h1>
+			</div>
+			<br> <br>
+			<h4 style="text-align: center;color: #3C4557;">SISTEMA INFORM&Aacute;TICO WEB PARA LA INTEGRACI&Oacute;N DE DIVERSOS
+				TIPOS DE FUENTES DE REGISTROS ADMINISTRATIVOS Y GENERACI&Oacute;N DE
+				REPORTES SOBRE INDICADORES ESTAD&Iacute;STICOS</h4>
+				<br><br><br>
+				<img src="../static/imgs/formato.png" th:src="@{/imgs/formato.png}"
+				style="width: 600px; height: 150px; display:block;margin:auto;"> <br>
+		</div>
+	</div>
+	</contenido>
+	<nuevosScripts> </nuevosScripts>
+</body>
+</html>

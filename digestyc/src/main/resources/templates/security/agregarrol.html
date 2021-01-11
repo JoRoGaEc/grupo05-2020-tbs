@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Gesti&oacute;n de Seguridad -> Usuarios -> Asignaci&oacute;n de roles</b>
+				</h5>
+				<hr />
+				<h4>
+					<strong th:if="${usuario.username.toUpperCase() != 'ADMINISTRADOR'}"
+						th:text="${usuario.nombre.toUpperCase()} +'  ' +${usuario.apellido.toUpperCase()} + ' ('+${usuario.username.toUpperCase()}+')'"></strong>
+					<strong th:if="${usuario.username.toUpperCase() == 'ADMINISTRADOR'}"
+						th:text="${usuario.nombre.toUpperCase()}"></strong>
+				</h4>
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-6">
+			<form action="#" th:action="@{/usuarios/eliminarrol}" method="POST"
+				class="was-validated" id="formEliminarRol">
+				<input type="hidden" name="${_csrf.parameterName}"
+					value="${_csrf.token}" /> <input type="number"
+					th:value="${usuario.id}" id="usuario_id" name="usuario_id"
+					hidden="" /> <input type="number" value="0" id="eliminar_todo"
+					name="eliminar_todo" hidden="" />
+
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<strong style="color: #697185;">Roles activos: </strong>
+						<div class="row text-right">
+							<div class="col-lg-8">
+								<button class="btn btn-accion" type="submit">
+									Eliminar seleccionados <i class="fa fa-trash-o"></i> 
+								</button>
+							</div>
+							<div class="col-lg-3">
+								<a href="#" data-toggle="modal" data-target="#modalEliminar"
+									class="btn btn-accion">Eliminar todos <i class="fa fa-trash-o"></i>
+									</a>
+							</div>
+						</div>
+					</div>
+					<div class="panel-body">
+						<div class="table-responsive" style="overflow-x: scroll;">
+							<table class="table table-striped table-bordered table-hover"
+								id="eliminarRol">
+								<thead>
+									<tr>
+										<th style="text-align: center;">Nombre</th>
+										<th style="text-align: center;">Descripci&oacute;n</th>
+										<th style="text-align: center;">Eliminar</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="odd gradeX" th:each="rol: ${usuario.roles}">
+										<td th:text="${rol.nombre}"></td>
+										<td th:text="${rol.descripcion}"></td>
+										<td style="text-align: center;"><input name="quitarRol"
+											type="checkbox" th:value="${rol.id}" id="quitarRol">
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<!-- /.panel-body -->
+				</div>
+				<!-- /.panel -->
+			</form>
+			<!-- /form -->
+		</div>
+		<!-- /.col-lg-6 -->
+
+		<div class="col-lg-6">
+			<form action="#" th:action="@{/usuarios/guardarrol}" method="POST"
+				class="was-validated" id="formGuardar">
+				<input type="hidden" name="${_csrf.parameterName}"
+					value="${_csrf.token}" /> <input type="number"
+					th:value="${usuario.id}" id="usuario_id" name="usuario_id"
+					hidden="" /> <input type="number" id="agregarTodoRol"
+					name="agregarTodoRol" value="0" hidden="">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<strong style="color: #697185;">Roles disponibles: </strong>
+						<div class="row text-right">
+							<div class="col-lg-8">
+								<button class="btn btn-accion">
+									Agregar seleccionados <i class="fa fa-plus"></i> 
+								</button>
+							</div>
+							<div class="col-lg-3">
+								<a href="#" class="btn btn-accion" data-toggle="modal"
+									data-target="#modalAgregar">Agregar todos <i class="fa fa-plus"></i>
+									</a>
+							</div>
+						</div>
+					</div>
+					<div class="panel-body">
+						<div class="table-responsive" style="overflow-x: scroll;">
+							<table class="table table-striped table-bordered table-hover"
+								id="agregarRol">
+								<thead>
+									<tr>
+										<th style="text-align: center;">Nombre</th>
+										<th style="text-align: center;">Descripci&oacute;n</th>
+										<th style="text-align: center;">Agregar</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="odd gradeX" th:each="rol: ${roles}">
+										<td th:text="${rol.nombre}"></td>
+										<td th:text="${rol.descripcion}"></td>
+										<td style="text-align: center;"><input name="guardarRol"
+											type="checkbox" th:value="${rol.id}"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<!-- /.panel-body -->
+				</div>
+				<!-- /.panel -->
+			</form>
+		</div>
+	</div>
+	<a href="#" th:href="@{/usuarios/listar}" class="btn btn-secun"><i
+		class="fa fa-backward" aria-hidden="true"></i> Regresar</a> <!-- MODAL PARA SOLICITAR CONFIRMACION DE ELIMINAR PERMISOS -->
+	<div class="modal fade" id="modalEliminar">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel">
+					<div class="panel-heading" style="text-align: center;">
+						<b style="color: #6A83BE;">&iquest; Seguro que quiere eliminar todos los roles ?</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<div class="modal-footer center">
+							<button class="btn btn-normal" onclick="eliminarTodo()">
+								Aceptar <i class="fa fa-check-circle" aria-hidden="true"></i> 
+							</button>
+							<a href="#" data-dismiss="modal" class="btn btn-secun"
+								type="button">Cancelar <i class="fa fa-times-circle"
+								aria-hidden="true"></i> 
+							</a>
+						</div>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- MODAL PARA SOLICITAR CONFIRMACION DE AGREGAR PERMISOS -->
+	<div class="modal fade" id="modalAgregar">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel">
+					<div class="panel-heading" style="text-align: center;">
+						<b style="color: #6A83BE;">&iquest; Seguro que quiere agregar todos los roles ?</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<div class="modal-footer center">
+							<button class="btn btn-normal" onclick="agregarTodo()">
+								Aceptar <i class="fa fa-check-circle" aria-hidden="true"></i> 
+							</button>
+							<a href="#" data-dismiss="modal" class="btn btn-secun"
+								type="button">Cancelar <i class="fa fa-times-circle"
+								aria-hidden="true"></i> 
+							</a>
+						</div>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	</contenido>
+	<nuevosScripts> <script>
+		$(document)
+				.ready(
+						function() {
+							var idioma_espanol = {
+								"sProcessing" : "Procesando...",
+								"sLengthMenu" : "Mostrar _MENU_  registros",
+								"sZeroRecords" : "No se encontraron resultados",
+								"sEmptyTable" : "Sin datos disponibles",
+								"sInfo" : "Mostrando del _START_ al _END_ de un total de _TOTAL_ registros",
+								"sInfoEmpty" : "Mostrando registros del 0 al 0 de un total de 0 registros",
+								"sInfoFiltered" : "(filtrado de un total de _MAX_ registros)",
+								"sInfoPostFix" : "",
+								"sSearch" : "Buscar: ",
+								"sUrl" : "",
+								"sInfoThousands" : ",",
+								"sLoadingRecords" : "Cargando...",
+								"oPaginate" : {
+									"sFirst" : "Primero",
+									"sLast" : "Último",
+									"sNext" : "Siguiente",
+									"sPrevious" : "Anterior"
+								},
+								"oAria" : {
+									"sSortAscending" : ": Activar para ordenar la columna de manera ascendente",
+									"sSortDescending" : ": Activar para ordenar la columna de manera descendente"
+								},
+								"buttons" : {
+									"copy" : "Copiar",
+									"colvis" : "Visibilidad"
+								}
+							} //fin para traduccion
+
+							$('#agregarRol').dataTable({
+								"language" : idioma_espanol
+							});
+
+							$('#eliminarRol').dataTable({
+								"language" : idioma_espanol
+							});
+
+						});
+	</script> <script>
+		function agregarTodo() {
+			let form = document.getElementById('formGuardar');
+			let fd = new FormData(form);
+			let agregar = document.getElementById('agregarTodoRol');
+			agregar.value = 100;
+			form.submit();
+		}
+
+		function eliminarTodo() {
+			let eliminar = document.getElementById('eliminar_todo');
+			eliminar.value = 100;
+			let form = document.getElementById('formEliminarRol');
+			form.submit();
+		}
+	</script> </nuevosScripts>
+</body>
+</html>

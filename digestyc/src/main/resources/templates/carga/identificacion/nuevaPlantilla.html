@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Cargar datos -> Gesti&oacute;n de plantillas -> Nueva
+						plantilla</b>
+				</h5>
+				<hr />
+				<h4
+					th:text="@{Nueva Versi&oacute;n de Plantilla para Registro:}+ ' ' + ${registro.nombre.toUpperCase()}"></h4>
+				<h5 th:text="@{C&oacute;digo:}+ ' ' + ${registro.codigo}"></h5>
+				<h5 th:text="@{Instituci&oacute;n:}+ ' ' + ${registro.institucion.nombre}"></h5>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12" style="color: #697185;">
+			IMPORTANTE:<b style="color: green; font-size: medium">&ast;</b><small><p
+					style="text-align: justify">
+					<label>Cuando presione el bot&oacute;n
+						<button disabled class="btn btn-desactivado btn-sm">
+							<i class="fa fa-save"></i> Guardar
+						</button>, se generar&aacute; una nueva versi&oacute;n de la plantilla.
+					</label>
+				</p></small>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div style="float: right">
+				<a class="btn btn-accion" href="#" data-toggle="modal"
+					data-target="#agregarColumnaModal">Nueva columna <i class="fa fa-plus"
+					aria-hidden="true"></i> 
+				</a> <!--  <a class="btn btn-success" href="#" data-toggle="modal"
+					data-target="#agregarPlantillaModal"> <i class="fa fa-upload"
+					aria-hidden="true"></i> Importar
+				</a>-->
+				<!-- <a class="btn btn-success" href="#"
+					th:href="@{/identificacion/importeMasivo/}+${registro.id}+@{/}">
+					<i class="fa fa-download" aria-hidden="true"></i> Descargar
+				</a> -->
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<p th:if="${success == 'delete'}"
+						class="alert alert-bien text-center">Eliminaci&oacute;n
+						exitosa</p>
+					<p th:if="${success == 'edit'}"
+						class="alert alert-bien text-center">Actualizaci&oacute;n
+						exitosa</p>
+					<p th:if="${success == 'insert'}"
+						class="alert alert-bien text-center">Registro creado
+						exitosamente</p>
+					<p th:if="${error == 'repetido'}"
+						class="alert alert-mal text-center">Ya existe una plantilla
+						id&eacute;ntica a la que intenta crear, le sugerimos que habilite
+						dicha plantilla en: Gestionar plantillas, de &eacute;ste registro.</p>
+					<p th:if="${error == 'delete'}"
+						class="alert alert-mal text-center">No se puede eliminar,
+						es posible que este asociado</p>
+					<p th:if="${error == 'DATO'}"
+						class="alert alert-mal text-center">Debe seleccionar un
+						tipo de dato</p>
+					<p th:if="${error == 'edit'}"
+						class="alert alert-mal text-center">El registro ya no se
+						puede editar</p>
+					<p th:if="${error == 'insert'}"
+						class="alert alert-mal text-center">Error al ingresar nueva
+						columna el nombre no debe estar vac&iacute;o</p>
+					<p th:if="${error == 'plantilla'}"
+						class="alert alert-mal text-center">Error al ingresar nueva
+						columna, la plantilla esta vac&Iacute;a, contacte al administrador</p>
+					<p th:if="${error == 'versionHas'}"
+						class="alert alert-mal text-center">
+						No puede eliminar esta columna, ya que se han realizado <label
+							th:text="${numEnt}"></label> entregas bajo esta versi&oacute;n de
+						plantilla.
+					</p>
+					<p th:if="${unico == 'insert'}"
+						class="alert alert-mal text-center">Registro No creado, Ya
+						Existe una columna con ese Nombre</p>
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<form action="#"
+						th:action="@{/identificacion/guardar/nuevaPlantilla}"
+						method="POST" class="was-validated">
+						<input type="hidden" name="${_csrf.parameterName}"
+							value="${_csrf.token}" /> <input type="number" id="id" name="id"
+							th:value="${registro.id}" hidden="" readonly="readonly"
+							required="required"> <input type="number"
+							id="id_institucion" name="id_institucion"
+							th:value="${registro.institucion.id}" hidden=""
+							readonly="readonly" required="required">
+						<div class="table-responsive" >
+							<table class="table table-striped table-bordered table-hover"
+								id="tablaColumnas">
+								<thead>
+									<tr>
+										<!-- <th style="text-align: center;">ID</th> -->
+										<th style="text-align: center;">#</th>
+										<th style="text-align: center;">Nombre de columna</th>
+										<th style="text-align: center;">Acci&oacute;n</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:id="${columna}" class="odd gradeX"
+										th:each="columna, iterator: ${COLUMNAS_SESSION}">
+										<td th:text="${iterator.index + 1}"></td>
+										<td style="text-align: center; background-color: #F3FFF2">
+											<input name="columna_plantilla_nueva"
+											id="columna_plantilla_nueva" th:value="${columna}"
+											class="form-control" />
+										</td>
+										<td style="text-align: center;"><a href="#"
+											class="btn btn-accion"
+											th:attr="onclick=|borrarColumna('${columna}')|">Eliminar <i
+												class="fa fa-trash-o" aria-hidden="true"></i> </a></td>
+									</tr>
+								</tbody>
+							</table>
+							<button type="submit" href="#" class="btn btn-normal">
+								Guardar <i class="fa fa-save"></i> 
+							</button>
+							<a href="#" th:if="${tipoRegistro.id == 1}"
+								th:href="@{/plantillas/ra/}+${registro.institucion.id}+@{/}" class="btn btn-secun" type="button">
+								Cancelar <i class="fa fa-times-circle" aria-hidden="true"></i> 
+							</a> <a href="#" th:if="${tipoRegistro.id == 2}"
+								th:href="@{/plantillas/oe/}+${registro.institucion.id}+@{/}"
+								class="btn btn-secun" type="button">Cancelar <i
+								class="fa fa-times-circle" aria-hidden="true"></i> 
+							</a>
+						</div>
+					</form>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+    		<a href="#"	th:href="@{/registro/listar}" class="btn btn-accion">Gesti&oacute;n de
+						RA/OE  <i
+						class="fa fa-file-o" aria-hidden="true"></i> 
+			</a>	<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+
+	<!-- MODAL PARA AGREGAR COLUMNA -->
+	<div class="modal fade" id="agregarColumnaModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel">
+					<div class="panel-heading" style="text-align: center;">
+						<b style="color: #6A83BE;">NUEVA COLUMNA</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<div class="panel-heading" style="text-align: center;">
+							<small style="color: #696969">Los campos marcados con <b
+								style="color: red; font-size: medium">&ast;</b> son obligatorios
+							</small>
+						</div>
+						<div class="modal-body">
+							<div class="form-group">
+								<!--  <label for="nombre">NOMBRE COLUMNA NUEVA <b
+									style="color: red; font-size: medium">&ast;</b></label>-->
+								<input
+									type="text" class="form-control" required
+									placeholder="Nombre *" id="nombre_columna"
+									name="nombre_columna" min="1" maxlength="60" /> <small
+									style="color: #F47347"> - El campo nombre no puede estar
+									vac&iacute;o <br> - Necesita m&iacute;nimo 1 caracter y
+									m&aacute;ximo 60 caracteres
+
+								</small> <input type="hidden" class="form-control" id="errorNombre"
+									th:value="${error}" />
+								<p th:if="${error == 'insert'}" class="text-danger">El campo
+									nombre no puede estar vac&iacute;o</p>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-normal" type="submit"
+								th:attr="onclick=|agregarColumna()|">
+								Guardar <i class="fa fa-floppy-o" aria-hidden="true"></i> 
+							</button>
+							<a href="#" data-dismiss="modal" class="btn btn-secun"
+								type="button">Cancelar <i class="fa fa-times-circle"
+								aria-hidden="true"></i> 
+							</a>
+						</div>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- MODAL PARA IMPORTAR PLANTILLA -->
+	<div class="modal fade" id="agregarPlantillaModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel-primary">
+					<div class="panel-heading" style="text-align: center;">
+						<b>IMPORTAR PLANTILLA DE IDENTIFICACI&Oacute;N</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<div class="panel-heading" style="text-align: center;">
+							<small style="color: #696969">Los campos marcados con <b
+								style="color: red; font-size: medium">&ast;</b> son obligatorios
+							</small>
+						</div>
+						<form action="#" th:action="@{/identificacion/importarNueva}"
+							method="POST" class="was-validated" enctype="multipart/form-data">
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" /> <input type="number" id="registro"
+								name="registro" th:value="${registro.id}" hidden=""
+								readonly="readonly" required="required"> <input
+								type="number" th:if="${registro.plantilla != null}"
+								id="plantilla" name="plantilla"
+								th:value="${registro.plantilla.id}" hidden=""
+								readonly="readonly" required="required"> <input
+								type="number" th:if="${registro.plantilla == null}"
+								id="plantilla" name="plantilla" value="0" hidden=""
+								readonly="readonly"> <input type="text"
+								name="redireccion"
+								th:value="@{/identificacion/nuevaPlantilla/}+${registro.id}+@{/}"
+								readonly="readonly" hidden="">
+							<div class="modal-body">
+								<div class="form-group">
+									<label for="nombre">ARCHIVO</label> <b
+										style="color: red; font-size: medium">&ast;</b> <input
+										type="file" class="form-control" id="archivo" name="archivo"
+										required
+										accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+									<p th:if="${error == 'archivo'}" class="text-danger">El
+										campo nombre no puede estar vac&iacute;o</p>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-normal" type="submit">
+									Guardar <i class="fa fa-floppy-o" aria-hidden="true"></i> 
+								</button>
+								<a href="#" data-dismiss="modal" class="btn btn-secun"
+									type="button">Cancelar <i class="fa fa-times-circle"
+									aria-hidden="true"></i> 
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<footer class="footer bg-dark rounded-top text-center">
+			<div class="container py-2">
+				<p class="text-white my-2"></p>
+			</div>
+		</footer>
+	</div>
+	</contenido>
+
+	<nuevosScripts> <script>
+		function borrarColumna(nombreColumna) {
+			if (window.jQuery) {
+				// jQuery is loaded  
+				$('#' + nombreColumna + '').remove();
+				//let nombre_columna = document.getElementById('nombre_columna').value;
+				//alert('nombre_columna');
+			}
+
+		}
+
+		function agregarColumna() {
+			$('#agregarColumnaModal').modal('hide');
+			let nombre_columna = document.getElementById('nombre_columna').value;
+			if (nombre_columna == null || nombre_columna.length == 0) {
+				return false;
+			}
+			let num_cols = $('#tablaColumnas tr').length;
+			let markup = "<tr id='"
+					+ nombre_columna.toUpperCase()
+					+ "'>"
+					+ "<td>"
+					+ (num_cols)
+					+ "</td>"
+					+ "<td style='text-align: center;'>"
+					+ "<input id='columna_plantilla_nueva' name='columna_plantilla_nueva' value='"
+					+ nombre_columna.toUpperCase()
+					+ "' class='form-control'/>"
+					+ "</td>"
+					+ "<td style='text-align: center;'>"
+					+ "<a href=\"#\" onclick=\"borrarColumna(\'"
+					+ nombre_columna.toUpperCase()
+					+ "\')"
+					+ "\" class='btn btn-accion'>Eliminar <i class='fa fa-trash-o' aria-hidden='true'></i></a>"
+					+ "</td>" + "</tr>";
+
+			$("table tbody").append(markup);
+		}
+	</script> </nuevosScripts>
+
+</body>
+</html>

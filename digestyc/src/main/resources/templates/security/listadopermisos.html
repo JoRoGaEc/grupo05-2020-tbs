@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Gesti&oacute;n de Seguridad -> Permisos</b>
+				</h5>
+				<hr/>
+				<h4>Listado de Permisos</h4>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div style="float: right">
+				<a type="button" class="btn btn-accion" data-toggle="modal"
+					data-target="#agregarPermisoModal">Nuevo <i class="fa fa-plus"
+					aria-hidden="true" href="#"
+					th:href="@{/permisos/permisoform(id=0)}"></i> 
+				</a>
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<p th:if="${success == 'delete'}"
+						class="alert alert-bien text-center">Eliminaci&oacute;n
+						exitosa</p>
+					<p th:if="${success == 'edit'}"
+						class="alert alert-bien text-center">Actualizaci&oacute;n
+						exitosa</p>
+					<p th:if="${success == 'insert'}"
+						class="alert alert-bien text-center">Registro creado
+						exitosamente</p>
+					<p th:if="${unico == 'insert'}"
+						class="alert alert-mal text-center">Registro No creado, Ya
+						Existe un Permiso con ese Nombre</p>
+					<p th:if="${error == 'insert'}"
+						class="alert alert-mal text-center">
+						Registro No creado, por algunas de las siguientes razones: <br>
+						- El Nombre debe tener m&aacute;ximo 128 car&aacute;cteres<br>
+						- La Ubicaci&oacute;n debe tener m&aacute;ximo 300
+						car&aacute;cteres<br>
+					</p>
+					<p th:if="${error == 'edit'}"
+						class="alert alert-mal text-center">
+						Registro No Actualizado, por algunas de las siguientes razones: <br>
+						- El Nombre debe tener m&aacute;ximo 128 car&aacute;cteres<br>
+						- La Ubicaci&oacute;n debe tener m&aacute;ximo 300
+						car&aacute;cteres<br>
+					</p>
+					<p th:if="${unico == 'edit'}"
+						class="alert alert-mal text-center">Registro No
+						Actualizado, Ya Existe un Permiso con ese Nombre</p>
+					<p th:if="${error == 'delete'}"
+						class="alert alert-mal text-center">No se puede eliminar,
+						es posible que este asociado a un rol</p>
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<div class="table-responsive" style="overflow-x: scroll;">
+						<table class="table table-striped table-bordered table-hover"
+							id="agregarDatatable">
+							<thead>
+								<tr>
+									<th style="text-align: center;">Nombre</th>
+									<th style="text-align: center;">URL</th>
+									<th style="text-align: center;">Acciones</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="odd gradeX" th:each="permiso: ${permisos}">
+									<td th:text="${permiso.nombre}"></td>
+									<td th:text="${permiso.ubicacion}"></td>
+
+									<td style="text-align: center;"><a type="button" href="#"
+										class="btn btn-accion btn-sm"
+										th:attr="onclick=|crearModal(${permiso.id}, '${permiso.nombre}', '${permiso.ubicacion}')|">
+											Editar <i class="fa fa-edit fa-lg"></i> 
+									</a> <a href="#" class="btn btn-accion btn-sm"
+										th:attr="onclick=|crearModalEliminar(${permiso.id}, '${permiso.nombre}')|">
+											Eliminar <i class="fa fa-trash-o" aria-hidden="true"></i> 
+									</a></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<a href="#" th:href="@{/index}" class="btn btn-accion">Inicio <i
+							class="fa fa-home" aria-hidden="true"></i></a>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+
+	<!-- MODAL PARA AGREGAR PERMISO -->
+	<div class="modal fade" id="agregarPermisoModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel">
+					<div class="panel-heading" style="text-align: center;">
+						<b style="color: #6A83BE;">NUEVO PERMISO</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<form action="#" th:action="@{/permisos/addpermiso}"
+							th:object="${permisoModel}" method="POST" class="was-validated">
+							<input type="hidden" th:field="*{id}" />
+							<div class="panel-heading" style="text-align: center;">
+								<small style="color: #696969">Los campos marcados con <b
+									style="color: red; font-size: medium">&ast;</b> son
+									obligatorios
+								</small>
+							</div>
+							<div class="modal-body">
+								<div class="form-group">
+									<!--  <label for="nombre">NOMBRE <b style="color: red; font-size: medium">&ast;</b></label>-->
+									<input
+										type="text" class="form-control" name="nombre"
+										th:field="*{nombre}" th:value="${nombre}" placeholder="Nombre *" required /> <br>
+									<!--  <label for="ubicacion">UBICACI&Oacute;N <b style="color: red; font-size: medium">&ast;</b></label>-->
+									<input
+										type="text" class="form-control" name="ubicacion"
+										th:field="*{ubicacion}" th:value="${ubicacion}" placeholder="Ubicaci&oacute;n *" required />
+								</div>
+
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-normal" type="submit">
+									Guardar <i class="fa fa-floppy-o" aria-hidden="true"></i> 
+								</button>
+								<a href="#" data-dismiss="modal" class="btn btn-secun"
+									type="button">Cancelar <i class="fa fa-times-circle"
+									aria-hidden="true"></i> 
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- MODAL PARA EDITAR PERMISO -->
+	<div class="modal fade" id="editarPermisoModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel">
+					<div class="panel-heading" style="text-align: center;">
+						<b style="color: #6A83BE;">EDITAR PERMISO</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<form action="#" th:action="@{/permisos/editpermiso}"
+							method="POST" class="was-validated">
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" /> <input type="number" value=""
+								id="editar_permiso_id" name="editar_permiso_id" hidden="" />
+							<div class="panel-heading" style="text-align: center;">
+								<small style="color: #696969">Los campos marcados con <b
+									style="color: red; font-size: medium">&ast;</b> son
+									obligatorios
+								</small>
+							</div>
+							<div class="modal-body">
+								<div class="form-group">
+									<!-- <label for="nombre">NOMBRE <bstyle="color: red; font-size: medium">&ast;</b></label> --> 
+								   <input
+										type="text" class="form-control" name="editar_permiso_nombre"
+										id="editar_permiso_nombre" value="" placeholder="Nombre *" required>
+								</div>
+								<div class="form-group">
+									 <!--<label for="nombre">UBICACI&Oacute;N <b style="color: red; font-size: medium">&ast;</b></label> -->
+									<input
+										type="text" class="form-control"
+										name="editar_permiso_ubicacion" id="editar_permiso_ubicacion"
+										value="" placeholder="Ubicaci&oacute;n *" required>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-normal" type="submit">
+									Actualizar <i class="fa fa-refresh" aria-hidden="true"></i> 
+								</button>
+								<a href="#" data-dismiss="modal" class="btn btn-secun"
+									type="button">Cancelar <i class="fa fa-times-circle"
+									aria-hidden="true"></i> 
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- MODAL PARA ELIMINAR PERMISO -->
+	<div class="modal fade" id="eliminarPermisoModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel">
+					<div class="panel-heading" style="text-align: center;">
+						<b style="color: #6A83BE;">ELIMINAR PERMISO</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<form action="#" th:action="@{/permisos/removepermiso}"
+							method="POST" class="was-validated">
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" /> <input type="number" value=""
+								id="id_eliminar" name="id_eliminar" hidden=""
+								readonly="readonly" />
+							<div class="modal-body">
+								<label style="color: #6A83BE;">&iquest;Desea Eliminar&quest;</label>
+								<hr>
+								<div class="form-group">
+									<label style="color: #697185;" for="nombre">NOMBRE</label> <input type="text"
+										class="form-control" name="eliminar_nombre"
+										id="eliminar_nombre" value="" required readonly="readonly">
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-normal" type="submit">
+									Aceptar <i class="fa fa-check-circle" aria-hidden="true"></i> 
+								</button>
+								<a href="#" data-dismiss="modal" class="btn btn-secun"
+									type="button">Cancelar <i class="fa fa-times-circle"
+									aria-hidden="true"></i> 
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	</contenido>
+
+	<nuevosScripts> <script>
+		function crearModal(id, nombre, ubicacion) {
+			document.getElementById('editar_permiso_id').value = id;
+			document.getElementById('editar_permiso_nombre').value = nombre;
+			document.getElementById('editar_permiso_ubicacion').value = ubicacion;
+			$('#editarPermisoModal').modal();
+		}
+
+		function crearModalEliminar(id, nombre) {
+			document.getElementById('id_eliminar').value = id;
+			document.getElementById('eliminar_nombre').value = nombre;
+			$('#eliminarPermisoModal').modal();
+			console.log(nombre);
+		}
+	</script> <script>
+		window.onload = function() {
+			//alert("Javascript especifico");
+		};
+	</script> </nuevosScripts>
+
+</body>
+</html>

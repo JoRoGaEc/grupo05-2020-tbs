@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html >
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+<body th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div>
+				<div class="panel-heading">
+					<h4 style="color: #F47347;">
+						<b >&iexcl;Acceso denegado!</b>
+					</h4>
+				</div>
+			</div>
+		</div>
+	</div>
+	<hr>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+				</div>
+				<div class="panel-body">
+					<p>Usted no tiene permisos para acceder al recurso,
+					   pongase en contacto con el <em>Administrador.</em>					   
+						</p>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	<br>
+
+	<!-- MODAL PARA ELIMINAR INSTITUCION -->
+	
+	</contenido>
+	
+	<nuevosScripts>
+
+	</nuevosScripts>
+	
+</body>
+</html>

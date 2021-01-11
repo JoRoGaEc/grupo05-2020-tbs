@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Cargar datos -> Crear registro -> Nuevo RA/OE</b>
+				</h5>
+				<hr />
+				<h4>Nuevo Registro Administrativo /	Operaci&oacute;n Estad&iacute;stica</h4>
+			</div>
+		</div>
+
+	</div>
+	<div class="row">
+		<div class="col-lg-12" style="color: #697185;">
+			NOTA:<b style="color: green; font-size: medium">&ast;</b><small><p
+					style="text-align: justify">
+					<label>En el campo 'CARGAR PLANTILLA', puede
+						seleccionar uno de los 5 formatos permitidos XLSX / XLS, SPSS, DBF, TXT
+						&oacute; CSV.</label>
+				</p></small>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<p th:if="${success}" class="alert alert-bien text-center">Registro
+						creado exitosamente</p> <p th:if="${error == 'error'}"
+						class="alert alert-mal">Registro No creado,
+						por algunas de las siguientes razones: <br> - No existe
+						Directorio Creado.<br> - Datos ingresados no validos <br>
+					</p>
+
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<div class="panel-heading" style="text-align: left;">
+						<small style="color: #696969">Los campos marcados con <b
+							style="color: red; font-size: medium">&ast;</b> son obligatorios
+						</small>
+					</div>
+					<br>
+					<form action="#" th:action="@{/registros/guardarregistro}"
+						th:object="${registroObject}" method="POST"
+						enctype="multipart/form-data">
+						<div class="row">
+							<div class="col-lg-4">
+								<div class="form-group">
+									<!--  <label>NOMBRE DE REGISTRO <b style="color: red; font-size: medium">&ast;</b></label>--> 
+									<input th:field="*{nombre}" class="form-control"
+										placeholder="Nombre *" required />
+									<p th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"
+										class="text-danger"></p>
+								</div>
+								<div class="form-group">
+									<!--  <label>PRIMERA ENTREGA <b style="color: red; font-size: medium">&ast;</b></label><br />--> 
+										<input  placeholder="Primera entrega *"	class="form-control"
+										th:field="*{fechaInicioEntrega}" required onfocus="(this.type='date')" id="date"/>
+									<p th:if="${#fields.hasErrors('fechaInicioEntrega')}"
+										th:errors="*{fechaInicioEntrega}" class="text-danger"></p>
+								</div>
+								<div class="form-group">
+									<!--  <label>DURACI&Oacute;N PLAZO (D&iacute;as) <b style="color: red; font-size: medium">&ast;</b></label>-->
+									<input type="number" min="1" th:field="*{duracionPlazoEntrega}"
+										class="form-control" placeholder="Duraci&oacute;n plazo (D&iacute;as) *"
+										required />
+								</div>
+								<div class="form-group">
+									<label style="color: #697185;">CARGAR PLANTILLA *</label> <input
+										th:name="archivo" id="archivo" class="form-control"
+										type="file" required /><br />
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<div class="form-group">
+									<label style="color: #697185;">TIPO DE REGISTRO *</label><br />
+									<ul class="list-group">
+										<th:block th:each="tipoRegistro: ${tipoRegistros}">
+											<li class="list-group-item">
+												<tr>
+													<td><label
+														th:text="${tipoRegistro.nombre} + ' (' + ${tipoRegistro.nombreCorto} + ')'"></label></td>
+													<td style="text-align: right;"><input
+														th:field="*{tipoRegistro.id}" type="radio"
+														th:value="${tipoRegistro.id}" required /></td>
+												</tr>
+											</li>
+										</th:block>
+									</ul>
+									<p th:if="${#fields.hasErrors('tipoRegistro')}"
+										th:errors="*{tipoRegistro}" class="text-danger"></p>
+								</div>
+								<div class="form-group">
+									<!--  <label>DESCRIPCI&Oacute;N</label>-->
+									<textarea style="resize: none;" rows="5" class="form-control"
+										id="descripcion" name="descripcion" th:field="*{descripcion}"
+										placeholder="Descripci&oacute;n"></textarea>
+									<p th:if="${#fields.hasErrors('descripcion')}"
+										th:errors="*{descripcion}" class="text-danger"></p>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<div class="form-group">
+									<!--  <label>PERIODICIDAD <b style="color: red; font-size: medium">&ast;</b></label>--> 
+									<select
+										class="periodicidad form-control"
+										th:field="*{periodicidad.id}" required>
+										<option value="" selected="selected" >Periodicidad *</option>
+										<option th:each="periodo : ${periodicidades}"
+											th:text="${periodo.nombre}" th:value="${periodo.id}">
+									</select>
+									<p th:if="${#fields.hasErrors('periodicidad')}"
+										th:errors="*{periodicidad}" class="text-danger"></p>
+								</div>
+								<div class="form-group">
+									<!-- <label>SECTOR <b style="color: red; font-size: medium">&ast;</b></label>-->
+									<select class="sector form-control" th:field="*{sector.id}"
+										required>
+										<option value="" selected="selected">Sector *</option>
+										<option th:each="sector: ${sectores}"
+											th:text="${sector.nombre}" th:value="${sector.id}">
+									</select>
+									<p th:if="${#fields.hasErrors('sector')}" th:errors="*{sector}"
+										class="text-danger"></p>
+								</div>
+								<div class="form-group">
+									<!--  <label>INSTITUCI&Oacute;N <b style="color: red; font-size: medium">&ast;</b></label>-->
+									<select
+										th:field="*{institucion.id}" class="institucion form-control"
+										required>
+										<option value="" selected="selected" >Instituci&oacute;n *</option>
+										<option th:each="i : ${instituciones}" th:text="${i.nombre}"
+											th:value="${i.id}">
+									</select>
+									<p th:if="${#fields.hasErrors('institucion')}"
+										th:errors="*{institucion}" class="text-danger"></p>
+								</div>
+								<div class="form-group">
+									<!--  <label>PRIORIDAD <b style="color: red; font-size: medium">&ast;</b></label>-->
+									<select
+										th:field="*{prioridad}" class="prioridad form-control"
+										required>
+										<!-- Esto debe ser leido  -->
+										<option value="" selected="selected" >Prioridad *</option>
+										<option value="1" th:text="1">
+										<option value="2" th:text="2">
+										<option value="3" th:text="3">
+										<option value="4" th:text="4">
+										<option value="5" th:text="5">
+									</select>
+									<p th:if="${#fields.hasErrors('prioridad')}"
+										th:errors="*{prioridad}" class="text-danger"></p>
+								</div>
+
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-lg-12" style="text-align: right;">
+								<button type="submit" class="btn btn-normal">
+									Guardar <i class="fa fa-floppy-o" aria-hidden="true"></i> 
+								</button>
+								<a href="#" th:href="@{/registro/listar}"
+									class="btn btn-secun " type="button">Cancelar <i
+									class="fa fa-times-circle" aria-hidden="true"></i> 
+								</a>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<!-- /.panel-body -->
+		</div>
+		<!-- /.panel -->
+	</div>
+	<!-- /.col-lg-12 --> </contenido>
+	<nuevosScripts> <script>
+		$(document).ready(function() {
+			$('.institucion').select2({
+				theme: "classic"
+				});
+			$('.prioridad').select2({
+				theme: "classic"
+				});
+			$('.sector').select2({
+				theme: "classic"
+				});
+			$('.periodicidad').select2({
+				theme: "classic"
+				});
+			
+		});
+	</script> </nuevosScripts>
+</body>
+</html>

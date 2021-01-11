@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Estandar -> Asignar Est&aacute;ndar </b>
+				</h5>
+				<hr />
+				<h4>Asignaci&oacute;n de est&aacute;ndar</h4>
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-12">
+			<div style="float: right">
+				<a class="btn btn-accion" href="/estandares/form" data-toggle="modal">Est&aacute;ndares <i class="fa fa-list-alt" aria-hidden="true"></i> 
+				</a>
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<p th:if="${unico == 'insert'}" class="alert alert-mal text-center">Registro No creado, Ya Existe una columna con ese Nombre</p>
+					<p th:each="error : ${errores}" th:text="${error}" class="text-danger"></p>
+					<p th:if="${success=='insert'}" class="alert alert-bien text-center"> <b>&iexcl;REGISTRO ALMACENADO CON EXITO!</b></p>
+					<p th:if="${error == 'one_dat_no_saved'}" class="alert alert-mal text-center">Un registro no se almaceno de manera exitosa</p>
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<form action="#" th:action="@{/asignarestandar/guardar}" method="POST" class="was-validated">
+						<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> 
+						<input type="hidden" name="url" id="url" th:value="${url}" /> 
+						<input type="hidden" th:if="${tabla_id!=null}" name="tabla_id" id="tabla_id" th:value="${tabla_id}" /> 
+						<input type="hidden" th:if="${tabla_id==null}" name="tabla_id" id="tabla_id" th:value="@{-1}" /> 
+						<div class="table-responsive" style="overflow-x: scroll;">
+							<table class="table table-striped table-bordered table-hover" id="agregarDatatable">
+								<thead>
+									<tr>
+										<th style="text-align: center;">Columna</th>
+										<th style="text-align: center;">Tipificaci&oacute;n</th>
+										<th style="text-align: center;">Tipo de dato</th>
+										<th style="text-align: center;">Valores t&iacute;picos</th>
+										<th style="text-align: center;">Est&aacute;ndar</th>
+										<th style="text-align: center;">Accion</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="odd gradeX" th:each="columna : ${columnasVersion}" th:if="${columna.plantillaColumna!=null}">
+										<td th:if="${columna.plantillaColumna!=null}" th:text="${columna.plantillaColumna.nombre}"></td>
+										<td th:if="${columna.tipificacion != null && columna.plantillaColumna.activo}" th:text="${columna.tipificacion.nombre}"></td>
+										<td th:if="${columna.tipificacion == null || !columna.plantillaColumna.activo}">
+											<strong>No puede asignarle un est&aacute;ndar</strong>
+										</td>
+										<td><label th:id="@{tipoDato}+${columna.id}">
+												<p th:if="${columna.tipificacion != null and columna.tipificacion.variacionTipoDato != null and columna.tipificacion.variacionTipoDato.tipoDato != null}" th:text="${columna.tipificacion.variacionTipoDato.tipoDato.tipoDatoSqlServer}"></p>
+										</label></td>
+										<td>
+											<label th:if="${columna.columnaCorrespondencia != null && columna.columnaCorrespondencia.estandar != null}">
+													<strong th:each="valor : ${columna.columnaCorrespondencia.estandar.valoresTipicosEstandar}">
+														<p th:each="parsear : ${valor.correspondencias}" th:text="${parsear.valorTipico.valor}+@{->}+${parsear.valorTipicoEstandar.valorTipico}"></p>
+													</strong>
+											</label>
+										</td>
+										<td>
+											<div th:if="${columna.tipificacion != null}">
+												<div>
+													<select class="estandar form-control" th:id="@{select_}+${columna.id}" th:name="@{select_}+${columna.id}" th:attr="onchange=|agregarEstandar(${columna.id})|">
+															<option th:if="${columna.columnaCorrespondencia == null}" value=""
+																selected="selected" >Est&aacute;ndar</option>
+															<option th:if="${columna.columnaCorrespondencia != null}"
+																th:value="${columna.columnaCorrespondencia.estandar.id}"
+																th:text="${columna.columnaCorrespondencia.estandar.nombre}"
+																selected="selected" disabled>Est&aacute;ndar</option>
+															<option th:each="estandar: ${estandares}"
+																th:value="${estandar.id}"
+																th:text="${estandar.nombre}"></option>
+													</select> 
+													<input th:id="@{estandar_}+${columna.id}" th:name="estandar" type="text" hidden="">
+												</div>
+											</div>
+										</td>
+										<td>
+											<div th:if="${columna.tipificacion != null}">
+											
+												<div th:if="${columna.tipificacion.valorTipico!=null}">
+													<div th:if="${columna.tipificacion.valorTipico.size() > 0 }" style="text-align: center;">
+														  <div th:if="${columna.columnaCorrespondencia != null}">
+														     <a href="#" th:if="${tabla_id == null}" class="btn btn-sm btn-accion" th:href="@{/estandares/asignar/valores-tipicos/}+${columna.id}+@{/}+${columna.columnaCorrespondencia.estandar.id}+@{/}">Asignar est&aacute;ndar <i class="fa fa-plus-circle" aria-hidden="true"></i></a>
+														     <a href="#" th:if="${tabla_id != null}" class="btn btn-sm btn-accion" th:href="@{/estandares/asignar/valores-tipicos/}+${columna.id}+@{/}+${columna.columnaCorrespondencia.estandar.id}+@{/}+${tabla_id}+@{/editar/}">Asignar est&aacute;ndar <i class="fa fa-plus-circle" aria-hidden="true"></i></a>
+														  </div>
+														  <div th:if="${columna.columnaCorrespondencia == null}">
+														  	<strong>Debe agregar un est&aacute;ndar</strong>
+														  </div>														  
+													</div>
+												    <div th:if="${columna.tipificacion.valorTipico.size() < 0 }">
+														  No aplica
+													</div>
+												</div>
+												<div th:if ="${columna.tipificacion.valorTipico == null }">
+													     No hay valores t&iacute;picos
+												</div>
+											</div>
+										    <div th:if="${columna.tipificacion == null }" style="text-align: center;">
+													    <strong>Debe asignar una tipificaci&oacute;n</strong>
+										    </div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<button type="submit" class="btn btn-normal">
+								Guardar <i class="fa fa-save"></i> 
+							</button>
+							<a href="#" th:href="@{/estandarizar/start_job}" class="btn btn-secun"
+								type="button">Cancelar <i class="fa fa-times-circle"
+								aria-hidden="true"></i> 
+							</a>
+						</div>
+					</form><br>
+					<a href="#" th:href="@{/estandarizar/start_job}" class="btn btn-secun"><i
+						class="fa fa-backward" aria-hidden="true"></i> Regresar</a>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	</contenido>
+
+	<nuevosScripts> 
+	<script>
+	
+	
+	function agregarEstandar(columnaId) {
+		let selectId = "select_" + columnaId;
+		let estandarId = "estandar_" + columnaId;
+		let valor = document.getElementById(selectId);
+		document.getElementById(estandarId).value = columnaId + ","
+				+ valor.value;
+		console.log(valor.value);
+	}
+	
+	
+	$(document).ready(
+			function() {
+				$('.estandar').select2({
+					theme: "classic"
+					});				
+			});
+	</script> </nuevosScripts>
+
+</body>
+</html>

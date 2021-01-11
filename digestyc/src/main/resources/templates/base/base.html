@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es-ES" xmlns:th="http://www.thymeleaf.org" class="no-ie">
+<head th:fragment="headerFragment(title)">
+<link rel="icon" th:href="@{/imgs/favicondi.ico}">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title th:replace="${title}"></title>
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+<link th:href="@{/font-awesome/css/font-awesome.css}" rel="stylesheet">
+<link th:href="@{/css/plugins/dataTables/dataTables.bootstrap.css}" rel="stylesheet">
+<link th:href="@{/css/sb-admin.css}" rel="stylesheet">
+<link th:href="@{/css/select2.min.css}" rel="stylesheet">
+<link th:href="@{/css/scroll.css}" rel="stylesheet">
+
+<style>
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+.dtHorizontalExampleWrapper {
+max-width: 600px;
+margin: 0 auto;
+}
+#dtHorizontalExample th, td {
+white-space: nowrap;
+}
+
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_asc_disabled:after,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_desc_disabled:after,
+table.dataTable thead .sorting_desc_disabled:before {
+bottom: .5em;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even){background-color: #f2f2f2}
+</style>
+
+</head>
+
+<body th:fragment="content(contenido, nuevosScripts)">
+    <div id="wrapper" style="background-color: #F4F7FD">
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0; background-color: #F4F7FD">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span> 
+                    <span class="icon-bar"></span> 
+                    <span class="icon-bar"></span> 
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">
+                    <b>SIFE-DIGESTYC</b>
+                </a>
+            </div>
+            <ul class="nav navbar-top-links navbar-right" style="background-color: #F4F7FD;">
+            
+               <li class="dropdown" sec:authorize="isAuthenticated()">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" >
+                        <i class="fa fa-bell fa-fw"></i> <span class="count_message" id="contador">  </span> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-alerts" id="notificationAlert">
+                    
+                    	<li>
+                            <a class="text-center" href="/reparar/notificaciones">
+                                <strong>Ver todas las notificaciones</strong>
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-alerts -->
+                </li>
+            
+
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#"> 
+                        <i class="fa fa-user fa-fw"></i>
+                        <i class="fa fa-caret-down"></i>
+                    </a>
+                    
+                    <ul class="dropdown-menu dropdown-user">
+                        <li>
+                            <a th:href="@{/usuarios/miPerfil/}">
+                                <i class="fa fa-user fa-fw"></i>Mi Perfil
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="POST">
+                                <button type="submit" class="btn btn-secun btn-sm btn-block">
+                                    <i class="fa fa-sign-out fa-fw"></i> Salir
+                                </button>
+                            </form>
+                        </li>
+                    </ul> <!-- /.dropdown -->
+                </li>
+            </ul>
+            <div class="navbar navbar-static-side" role="navigation" style="background-color: #F4F7FD;">
+                <div class="sidebar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li class="sidebar-search">
+                            <div class="input-group custom-search-form">
+                                <!--                                <input type="text" class="form-control" placeholder="Search..."> -->
+                                <span class="input-group-btn"> <img src="../static/imgs/digestyc.png" th:src="@{/imgs/digestyc.png}" style="width: 150px; height: 130px; display:block;margin:auto;" ></span>
+                            </div> <!-- /input-group -->
+                        </li>
+                        <li>
+                            <a href="/"><i class="fa fa-home"></i> Inicio </a>
+                        </li>
+                        <li>
+
+                        <a href="#">
+                                <i class="fa fa-lock" aria-hidden="true"></i> Seguridad<span class="fa arrow"></span>
+                        </a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="/usuarios/listar"><i class="fa fa-users" aria-hidden="true"></i> Usuarios</a>
+                                </li>
+                                <li>
+                                    <a href="/roles/listar"><i class="fa fa-cogs" aria-hidden="true"></i> Roles</a>
+                                </li>
+                                <li>
+                                    <a href="/permisos/listar"><i class="fa fa-list-ol" aria-hidden="true"></i> Permisos</a>
+                                </li>
+                                <li>
+                                    <a href="/bitacora/lista"><i class="fa fa-book" aria-hidden="true"></i> Bit&aacute;cora de actividades</a>
+                                </li>
+                            </ul> <!-- /.nav-second-level -->
+                        </li>
+                        <li>
+                            <a href="/directorio/crear"><i class="fa fa-folder-open" aria-hidden="true"></i> 1. Directorios</a>
+                        </li>
+                        <li>
+                            <a href="/instituciones/listar"><i class="fa fa-building-o" aria-hidden="true"></i> 2. Instituciones</a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fa fa-th" aria-hidden="true"></i> 3. Tipificaciones <span class="fa arrow"></span>
+                            </a>
+                            <ul class="nav nav-tipificaciones">
+                                <li>
+                                    <a href="/tipificacion/listar">
+                                        <i class="fa fa-file-o" aria-hidden="true"></i> 3.1 Tipificación
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/tipoDato/listar">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i> 3.2 Tipos de datos
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fa fa-cloud-upload" aria-hidden="true"></i> Cargar datos<span class="fa arrow"></span>
+                            </a>
+                            <ul class="nav nav-second-level">
+                                 <li>
+                                    <a href="/registros/crear"><i class="fa fa-file-text" aria-hidden="true"></i> 1. Crear registro</a>
+                                </li>
+                                <li>
+                                    <a href="/registro/listar"><i class="fa fa-file-o" aria-hidden="true"></i> 2. Entregas/Registros</a>
+                                </li>
+                                <li>
+                                    <a href="/HistorialEntrega/listar"><i class="fa fa fa-clock-o" aria-hidden="true"></i> 3. Historial de entrega</a>
+                                </li>
+                                <li>
+		                            <a href="#">
+		                                <i class="fa fa-files-o" aria-hidden="true"></i> 4. Plantillas <span class="fa arrow"></span>
+		                            </a>
+		                            <ul class="nav nav-tipificaciones">
+		                                <li>
+		                                    <a href="/plantillas/instituciones-con-ra-u-oe">
+		                                        <i class="fa fa-file-o" aria-hidden="true"></i> 4.1 Plantillas/Instituciones
+		                                    </a>
+		                                </li>
+		                               <!--  <li>
+		                                    <a href="#">
+		                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i> 4.2 Plantillas/Mi institución
+		                                    </a>
+		                                </li>--> 
+		                            </ul>
+                                </li>
+                            </ul> <!-- /.nav-second-level -->
+                        </li>                      
+                       
+                        <li>
+                            <a href="/validacion/start_job"><i class="fa fa-circle"></i> Validar datos </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fa fa-exchange" aria-hidden="true"></i> Est&aacute;ndares<span class="fa arrow"></span>
+                            </a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="/estandares/listar"><i class="fa fa-list-alt" aria-hidden="true"></i> 1. Est&aacute;ndares</a>
+                                </li>
+                                <li>
+                                    <a href="/estandarizar/start_job"><i class="fa fa-link" aria-hidden="true"></i> 2. Estandarizar</a>
+                                </li>
+                            </ul> <!-- /.nav-second-level -->
+                        </li>
+                    </ul>
+                    <!-- /#side-menu -->
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+
+        <div id="page-wrapper">
+        	<noscript>Su navegador no soporta Javascript</noscript>
+            <th:block th:replace="${contenido}" />
+        </div>
+
+    </div>
+    
+    <!-- Sockets -->
+   	<div sec:authorize="isAuthenticated()">
+	    <script th:src="@{/js/sockjs.min.js}"></script>
+	    <script th:src="@{/js/stomp.min.js}"></script>
+	    <script th:src="@{/js/notificacion.js}"></script>
+	    <script type="text/javascript">  
+			var socket = new SockJS('/ws');
+			stompClient = Stomp.over(socket);	
+			stompClient.connect({}, onConnected, onError);
+	    </script>
+    </div>
+    <!-- Sockets -->
+    
+    <!-- Core Scripts - Include with every page -->
+    <script th:src="@{/js/jquery-1.10.2.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/plugins/metisMenu/jquery.metisMenu.js}"></script>
+
+    <!-- Page-Level Plugin Scripts - Blank -->
+    <script th:src="@{/js/plugins/dataTables/jquery.dataTables.js}"></script>
+    <script th:src="@{/js/plugins/dataTables/dataTables.bootstrap.js}"></script>
+    <!-- SB Admin Scripts - Include with every page -->
+    <script th:src="@{/js/sb-admin.js}"></script>
+
+    <!-- JS PARA SELECT2 -->
+    <script th:src="@{/js/select2.min.js}"></script>
+
+    <!-- Page-Level Demo Scripts - Blank - Use for reference -->
+    <script th:inline="javascript">
+        $(document)
+                .ready(
+                        function() {
+                            var idioma_espanol = {
+                                "sProcessing" : "Procesando...",
+                                "sLengthMenu" : "Mostrar _MENU_  registros",
+                                "sZeroRecords" : "No se encontraron resultados",
+                                "sEmptyTable" : "Ningún dato disponible en esta tabla",
+                                "sInfo" : "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                                "sInfoEmpty" : "Mostrando registros del 0 al 0 de un total de 0 registros",
+                                "sInfoFiltered" : "(filtrado de un total de _MAX_ registros)",
+                                "sInfoPostFix" : "",
+                                "scrollX": true,
+                                "sSearch" : "Buscar: ",
+                                "sUrl" : "",
+                                "sInfoThousands" : ",",
+                                "sLoadingRecords" : "Cargando...",
+                                "oPaginate" : {
+                                    "sFirst" : "Primero",
+                                    "sLast" : "Último",
+                                    "sNext" : "Siguiente",
+                                    "sPrevious" : "Anterior"
+                                },
+                                "oAria" : {
+                                    "sSortAscending" : ": Activar para ordenar la columna de manera ascendente",
+                                    "sSortDescending" : ": Activar para ordenar la columna de manera descendente"
+                                },
+                                "buttons" : {
+                                    "copy" : "Copiar",
+                                    "colvis" : "Visibilidad"
+                                }
+                            } //fin para traduccion
+                            $('.dataTables_length').addClass('bs-select');
+                            $('#agregarDatatable').dataTable({
+                                "language" : idioma_espanol, 
+                            });
+
+                        });
+
+    	function consumirJSon() {
+            var url = "/notificacion_rest/notificaciones";
+            $.get(url,function(data,status){
+                for(let i=0;i<data.length;i++){
+                    var valor = data[i];
+                    $('#notificationAlert').append(
+                    		`<li>
+                                <a href="${valor.url}">
+                                    <div>
+                                        <i class="fa fa-dot-circle-o"></i> ${valor.titulo}
+                                        <span style="color: blue;" class="pull-right text-muted small">${valor.tabla}</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="divider"></li>`);
+                }
+            });
+		}
+    	
+    	actualizarContador();
+    	consumirJSon();
+		
+    </script>
+    <th:block th:replace="${nuevosScripts}" />
+</body>
+
+</html>

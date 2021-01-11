@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Gesti&oacute;n de Est&aacute;ndares -> Est&aacute;ndares ->
+						Editar Est&aacute;ndar</b>
+				</h5>
+				<hr />
+				<h4
+					th:text="@{Editar Est&aacute;ndar:}+ ' ' + ${estandar.nombre.toLowerCase()}"></h4>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-11">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<p th:if="${success == 'delete'}"
+						class="alert alert-bien text-center">Eliminaci&oacute;n
+						exitosa</p>
+					<p th:if="${success == 'edit'}"
+						class="alert alert-bien text-center">Actualizaci&oacute;n
+						exitosa</p>
+					<p th:if="${success == 'editValores'}"
+						class="alert alert-bien text-center">Actualizaci&oacute;n
+						exitosa de Valores</p>
+					<p th:if="${success == 'insert'}"
+						class="alert alert-bien text-center">Registro creado
+						exitosamente</p>
+					<p th:if="${error == 'Excepcion'}"
+						class="alert alert-mal text-center">Ocurrio una
+						excepci&oacute;n, comun&iacute;quese con el administrador</p>
+					<p th:if="${error == 'edit'}" class="alert alert-mal ">
+						No se puede actualizar el registro por los siguientes motivos: <br>
+						- El nombre del est&aacute;ndar debe tener entre 2 y 100
+						car&aacute;cteres<br> - La descripci&oacute;n debe tener
+						entre 5 y 500 car&aacute;cteres <br> - Debe seleccionar un
+						tipo de dato.
+					</p>
+					<p th:if="${error == 'delete'}" class="alert alert-mal text-center">No
+						se puede eliminar, es posible que este asociado</p>
+
+				</div>
+				<div class="panel-body">
+					<div class="panel-heading" style="text-align: left;">
+						<small style="color: #696969">Los campos marcados con <b
+							style="color: red; font-size: medium">&ast;</b> son obligatorios
+						</small>
+					</div>
+					<div class="row">
+						<div class="col-lg-11">
+							<form role="form" action="#"
+								th:action="@{/estandares/actualizar}" method="POST"
+								th:object="${estandar}">
+								<input type="hidden" name="${_csrf.parameterName}"
+									value="${_csrf.token}" /> <input type="hidden" name="id"
+									id="id" th:value="${estandar.id}" th:fields="*{id}" />
+								<div class="form-group">
+									<div class="col-lg-4">
+										<div class="form-group">
+											<!--  <label class="control-label" for="nombre">NOMBRE <b	style="color: red; font-size: medium">&ast;</b></label>-->
+											<input th:if="${full == false}" type="text"
+												class="form-control" id="nombre" name="nombre"
+												placeholder="Nombre *" th:fields="*{nombre}"
+												th:value="${estandar.nombre}" required> <input
+												th:if="${full == true}" type="text" class="form-control"
+												id="nombre" name="nombre" placeholder="Nombres"
+												th:fields="*{nombre}"
+												th:value="@{Nombre:}+ ' ' +${estandar.nombre}"
+												readonly="readonly">
+											<p th:if="${#fields.hasErrors('nombre')}"
+												th:errors="*{nombre}" class="text-danger"></p>
+										</div>
+									</div>
+									<div class="col-lg-4">
+										<div class="form-group" th:if="${full == false}">
+											<div class="form-group">
+												<!--  <label class="control-label" for="tipoDato">TIPO DE DATOS SQL SERVER<b style="color: red; font-size: medium">&ast;</b></label>-->
+												<p th:if="${error == 'DATO'}" class="text-danger">Error,
+													el tipo de dato no debe estar vac&iacute;o</p>
+												<select class="tipodatos form-control" name="dato_id"
+													id="dato_id" onchange="validar()" th:field="*{tipoDato}"
+													required>
+													<option value="" selected="selected" disabled>Tipo
+														de datos SQL SERVER *</option>
+													<option th:each="tipo: ${tiposDatosEstandar}"
+														th:value="${tipo.nombre}" th:text="${tipo.nombreEtiqueta}"></option>
+
+												</select> <input id="grupoDatos" type="hidden" name="grupoDatos"
+													th:field="*{grupoDatos}"> <label
+													th:each="tipo: ${tiposDatosEstandar}"> <input
+													th:id="@{tipoEstandar_}+${tipo.nombreEtiqueta}"
+													th:name="tipoEstandar" th:value="${tipo.grupoDatos}"
+													type="hidden" />
+												</label>
+											</div>
+										</div>
+										<div class="col-lg-12"></div>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-lg-8">
+										<!--  <label class="control-label" for="descripcion">DESCRIPCI&Oacute;N	<b style="color: red; font-size: medium">&ast;</b></label>-->
+										<textarea style="resize: none;" rows="4" class="form-control"
+											id="descripcion" name="descripcion"
+											placeholder="Descripci&oacute;n *" th:fields="*{descripcion}"
+											th:text="${estandar.descripcion}" required></textarea>
+										<p th:if="${#fields.hasErrors('descripcion')}"
+											th:errors="*{descripcion}" class="text-danger"></p>
+									</div>
+									<div class="col-lg-4" th:if="${full == false}">
+										<div class="col-lg-4">
+											<label style="color: #697185;" class="control-label"
+												for="esVacio">&iquest;PERMITE VAC&Iacute;O?</label> <input
+												type="checkbox" class="form-control" id="esVacio"
+												name="esVacio" placeholder="esVacio" th:fields="*{esVacio}"
+												th:checked="${estandar.esVacio}">
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-lg-11" th:if="${full == false}">
+										<p class="control-label"></p>
+										<!--  <label class="control-label" for="rango">DOMINIO DE	VALORES</label>-->
+										<select class="dominio form-control" name="rango" id="rango"
+											onchange="setDominio()">
+											<option value="0" selected="selected" disabled="disabled">Dominio
+												de valores</option>
+											<option value="2">Valores especif&iacute;cos</option>
+										</select>
+										<p class="control-label">
+											<label id="validacion_front"></label>
+										</p>
+										<div class="form-group">
+											<div class="col-lg-8">
+												<label style="color: #697185;" class="control-label">PAR&Aacute;METROS
+													EXTRAS</label>
+											</div>
+											<div class="col-lg-8" id="parametros_extras_id"></div>
+										</div>
+										<div class="form-group" id="valores_especificos">
+											<div class="col-lg-11">
+												<label style="color: #697185;" class="control-label">VALORES
+													ESPEC&Iacute;FICOS</label>
+											</div>
+										</div>
+									</div>
+								</div>
+								<br><br>
+								<div class="form-group">
+									<div class="col-lg-8" th:if="${full}">
+										<p class="control-label">
+											<label class="text-info">SI DESEA EDITAR LOS RANGOS
+												DE VALORES DEL EST&Aacute;NDAR DEBE ELIMINAR LOS VALORES
+												ACTUALES </label>
+										</p>
+										<a class="btn btn-accion" href="#" onclick="eliminarRangos()">Eliminar
+											<i class="fa fa-trash-o"></i>
+										</a><br /> <br />
+										<table class="table table-striped table-bordered table-hover"
+											id="eliminarRangos">
+											<thead>
+												<tr>
+													<!-- <th style="text-align: center;">ID</th>-->
+													<th style="text-align: center;">VALOR</th>
+												</tr>
+											</thead>
+											<tbody>
+												<div th:each="valor : ${estandar.valoresTipicosEstandar}">
+													<tr>
+														<td><label th:text="${valor.valorTipico}"></label></td>
+													</tr>
+												</div>
+											</tbody>
+										</table>
+									</div>
+								</div>
+								<hr>								
+								<div class="form-group" >
+									<div class="col-lg-8" id = "FormValorTipico">
+
+									</div>
+								</div>
+								<div class="form-group" >
+									<div class="col-lg-10" id = "divValoresTipicos">
+
+									</div>
+								</div>
+								
+								<div class="form-group">
+									<div class="col-lg-8">
+										<div class="form-inline">
+											<br>
+											<button type="submit" class="btn btn-normal">
+												Actualizar <i class="fa fa-refresh" aria-hidden="true"></i>
+											</button>
+											<a href="#" th:href="@{/estandares/listar}"
+												class="btn btn-secun" type="button">Cancelar <i
+												class="fa fa-times-circle" aria-hidden="true"></i>
+											</a>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<a href="#" th:href="@{/estandares/listar}" class="btn btn-secun">
+		<i class="fa fa-backward" aria-hidden="true"></i> Regresar
+	</a> <!-- MODAL PARA ELIMINAR TIPIFICACION -->
+
+	<div class="modal fade" id="eliminarRangoModal">
+		<div class="modal-dialog modal-default">
+			<div class="modal-content">
+				<div class="panel panel">
+					<div class="panel-heading" style="text-align: center;">
+						<b style="color: #6A83BE;">ELIMINAR RANGOS DE VALORES</b>
+						<button class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="panel-body">
+						<form action="#" th:action="@{/estandares/eliminarRango}"
+							method="POST" class="was-validated">
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" /> <input type="number"
+								th:value="${estandar.id}" id="id" name="id" hidden=""
+								readonly="readonly" />
+							<div class="modal-body">
+								<div class="form-group">
+									<label style="color: #6A83BE;">&iquest;Desea
+										Eliminar&quest;</label>
+									<hr>
+									<label style="color: #697185;" for="nombre">RANGO DE
+										VALORES DE EST&Aacute;NDAR</label> <input type="text"
+										class="form-control" name="eliminar_nombre"
+										id="eliminar_nombre" th:value="${estandar.nombre}" required
+										readonly="readonly">
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-normal" type="submit">
+									Aceptar <i class="fa fa-check-circle" aria-hidden="true"></i>
+								</button>
+								<a href="#" data-dismiss="modal" class="btn btn-secun"
+									type="button">Cancelar <i class="fa fa-times-circle"
+									aria-hidden="true"></i>
+								</a>
+							</div>
+						</form>
+					</div>
+					<div class="panel-footer" style="text-align: center;">DIGESTYC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	</contenido>
+
+	<nuevosScripts> <script>
+		$(document).ready(function() {
+			$('.tipodatos').select2({
+				theme : "classic"
+			});
+			$('.dominio').select2({
+				theme : "classic"
+			});
+			cerrarTodo();
+		});
+
+		function eliminarRangos() {
+			$('#eliminarRangoModal').modal();
+		}
+
+		function setDominio() {
+			var valor = document.getElementById('rango');
+			cerrarTodo();
+			var texto = $('#dato_id').find('option:selected').text().trim().toUpperCase();
+			var numeros = "DECIMAL(P,S),NUMERIC(P,S),FLOAT(N),BIGINT,INT,SMALLINT,BIT,REAL,MONEY,SMALLMONEY";
+			//var fechas = "DATE,DATETIME,DATETIME2,TIME,TIMESTAMP,SMALLDATETIME";
+			var strings = "CHAR(N),VARCHAR(N),TEXT,NCHAR(N),NVARCHAR(N)";
+			if (valor.value == 2) {
+				if (strings.includes(texto) || numeros.includes(numeros)) {
+					document.getElementById('valores_especificos').style.display = 'block';
+					document.getElementById('validacion_front').innerHTML = "";
+					
+					/*manejo de formularios*/
+					let divForms = document.getElementById("FormValorTipico");
+					let button   = document.createElement('BUTTON');
+	                let text = document.createTextNode("Agregar valor +"); 
+	                button.appendChild(text); 
+					button.setAttribute("onclick", "agregarTablaValoresTipicos()");
+					button.setAttribute("id", "agregar_valores_especificos_id");
+					button.setAttribute("class", "btn btn-sm btn-accion");
+					divForms.appendChild(button);
+								
+
+				} else {
+					document.getElementById('validacion_front').innerHTML = "NO PUEDES AGREGAR RANGO DE TEXTOS SI NO SELECCIONAS EL TIPO DE DATO ADECUADO, PUEDEN SER: "
+							+ strings;
+					$("#parametros_extras_id").empty();
+				}
+			}
+		}
+
+		function validar() {
+			document.getElementById("rango").options.item(0).selected = 'selected';
+			document.getElementById('validacion_front').innerHTML = "SI DESEA AGREGAR UN RANGO DE VALORES, SELECCIONE UNA OPCI&Oacute;N V&Aacute;LIDA ACORDE AL TIPO DE DATO SELECCIONADO";
+			var texto = $('#dato_id').find('option:selected').text().trim()
+			.toUpperCase();
+			document.getElementById("grupoDatos").value = document.getElementById("tipoEstandar_".concat(texto.toLowerCase())).value;
+			var pys = "DECIMAL(P,S),NUMERIC(P,S)"; //p,s
+			var soloN = "CHAR(N),VARCHAR(N),TEXT,NCHAR(N),NVARCHAR(N),FLOAT(N)"; //n
+			let parametros1 = `<br>
+					<input type="number" min="1" class="form-control"
+						id="precision" placeholder="precision (p)" name="precision" th:fields="*{precision}" required /><br>
+					<input type="number" min="1" class="form-control"
+								id="escala" placeholder="escala (s)" name="escala" th:fields="*{escala}" required /><br>`;
+			let parametros2 = `<br>
+			    	<input type="number" min="1" class="form-control"	placeholder="Longitud n" id="longitudN" name="longitudN" th:fields="*{longitudN}"
+											 required /><br>`;	
+			console.log("hola");
+			console.log(texto);
+			//document.getElementById("parametros_extras_id").innerHTML = "";
+			$("#parametros_extras_id").empty();
+			if(pys.includes(texto) || soloN.includes(texto) ){
+				if(pys.includes(texto)){
+					console.log("primeros parametros");
+					$("#parametros_extras_id").append(parametros1);
+					//document.getElementById("parametros_extras_id").innerHTML = parametros1;
+				}
+				if(soloN.includes(texto)){
+					console.log("segundos");
+					$("#parametros_extras_id").append(parametros2);
+					//document.getElementById("parametros_extras_id").innerHTML = parametros2;
+				}
+			}
+			cerrarTodo();
+		}
+
+		function cerrarTodo() {
+			if(document.getElementById("agregar_valores_especificos_id")!=null){
+				document.getElementById("agregar_valores_especificos_id").remove();
+		    }
+			if(document.getElementById("tabla_valores_tipicos_id")!=null){
+				document.getElementById("tabla_valores_tipicos_id").remove();
+		    }
+			if(document.getElementById("agregar_columna_id")!=null){
+				document.getElementById("agregar_columna_id").remove();
+		    }
+			
+			document.getElementById('valores_especificos').style.display = 'none';
+			
+		//document.getElementById('rango_numeros').style.display = 'none';
+		//document.getElementById('rango_fecha').style.display = 'none';
+        //document.getElementById('inicio_numero').value = '';
+		//document.getElementById('fin_numero').value = '';
+		//document.getElementById('valores').value = '';
+		//document.getElementById('inicio_fecha').value = '';
+		//document.getElementById('fin_fecha').value = '';
+
+		}
+		function agregarTablaValoresTipicos(){
+			var divTabla = document.getElementById("divValoresTipicos");
+			if(document.getElementById("agregar_valores_especificos_id")!=null){
+			   document.getElementById("agregar_valores_especificos_id").remove();
+		    }
+		    
+			let table =`<input id="contador_id" type="hidden" value="0"/>
+				        <input id="datos_val_tipicos" name="datos_val_tipicos" type="hidden" value=""/>
+					  <a class="btn btn-sm btn-accion" onclick="agregarColumna()" id="agregar_columna_id">Agregar valor t&iacute;pico +</a><br/>\n<br/>\n
+				      <table class="table  table-bordered table-striped" id="tabla_valores_tipicos_id">
+							<thead>
+							 	<th>Valor</th>
+							 	<th>Descripci&oacute;n</th>
+							 	<th>Acci&oacute;n</th>
+							</thead>
+							<tbody></tbody>
+						</table>`;
+		    
+			$("#divValoresTipicos").append(table);
+			//document.getElementById("divValoresTipicos").innerHTML = table;
+		}
+
+		function agregarColumna(){
+			//let num_cols  =  $('#tabla_valores_tipicos_id tr').length;
+			let num_cols = parseInt(document.getElementById("contador_id").value, 10);
+			document.getElementById("contador_id").value =  num_cols +1; 
+			let fila_id =`f_${num_cols+1}`;
+			let htmlColValTipico  = `<tr id="${fila_id}">
+					<td ><input class="form-control" type="text" id="valtip_${num_cols+1}" name="valtip_${num_cols+1}" placeholder="valtip_${num_cols+1}" required/></td>
+					<td><input class="form-control" type="text" id="destip_${num_cols+1}" name="destip_${num_cols+1}" placeholder="destip_${num_cols+1}" required/></td>
+					<td><a class="btn btn-sm btn-accion" onclick="borrarColumna('${fila_id}')">Borrar <i class='fa fa-trash-o' aria-hidden='true'></i></a></td>
+			</tr>`;
+			document.getElementById("datos_val_tipicos").value = document.getElementById("datos_val_tipicos").value +","+fila_id;
+			$('#tabla_valores_tipicos_id tbody').append(htmlColValTipico);
+			
+				
+		}
+
+		function borrarColumna(fila_id){
+			let filaABorrar =  document.getElementById(fila_id);
+			let listado="";
+			if(filaABorrar !=null){
+				listado = document.getElementById("datos_val_tipicos").value;
+				filaABorrar.remove();
+				listado = removerElemento(listado, fila_id, ",");
+			}
+			document.getElementById("datos_val_tipicos").value = listado;
+
+		}
+		function removerElemento(list, value, separator) {
+			  separator = separator || ",";
+			  var values = list.split(separator);
+			  for(var i = 0 ; i < values.length ; i++) {
+			    if(values[i] == value) {
+			      values.splice(i, 1);
+			      return values.join(separator);
+			    }
+			  }
+			  return list;
+		}
+		
+	</script> </nuevosScripts>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="base/base:: head(~{::title})">
+<title>SIFE</title>
+</head>
+<body
+	th:replace="base/base:: content(~{::contenido},~{::nuevosScripts})">
+	<contenido>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="page-header">
+				<h5>
+					<b>Cargar datos -> Gesti&oacute;n de plantillas ->
+						Instituciones -> Registro-> plantillas-> columnas</b>
+				</h5>
+				<hr />
+				<h4>Columnas de la plantilla</h4>
+				<h5 th:text="@{Nombre:}+ ' ' + ${vp.nombre}"></h5>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading"></div>
+				<div class="panel-body">
+					<div class="table-responsive" style="overflow-x: scroll;">
+						<table class="table table-striped table-bordered table-hover"
+							id="agregarDatatable">
+							<thead>
+								<tr>
+									<th style="text-align: center;">Columnas</th>
+								</tr>
+
+							</thead>
+
+							<tbody>
+								<tr th:each="columna: ${columnas}">
+									<td style="text-align: center;"
+										th:text="${columna.plantillaColumna.nombre}"></td>
+								</tr>
+							</tbody>
+						</table>
+
+					</div>
+					<br> <a
+						th:href="@{/plantillas/gestionar-plantillas/}+${registro}+@{/}"
+						class="btn btn-secun"> <i class="fa fa-backward"
+						aria-hidden="true"></i> Regresar
+					</a>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	</contenido>
+
+	<nuevosScripts> </nuevosScripts>
+
+
+</body>
+</html>
